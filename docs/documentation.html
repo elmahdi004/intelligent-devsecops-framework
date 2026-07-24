@@ -1,0 +1,1749 @@
+<meta charset="utf-8">
+<title>Documentation technique — Framework DevSecOps Intelligent</title>
+<style>
+/* ============================ BASE ============================ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1220; --navy2:#131E33; --navy3:#1B2942;
+  --cyan:#22D3EE; --cyan-d:#0E7490;
+  --violet:#A78BFA; --violet-d:#6D28D9;
+  --green:#34D399; --green-d:#047857;
+  --amber:#FBBF24; --amber-d:#B45309;
+  --red:#F87171; --red-d:#B91C1C;
+  --ink:#111827; --body:#374151; --muted:#6B7280;
+  --line:#E5E7EB; --tint:#F8FAFC;
+}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{
+  font-family:"Segoe UI",Inter,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  color:var(--body); font-size:10.2pt; line-height:1.62; background:#fff;
+}
+p{margin:0 0 8px; orphans:3; widows:3}
+strong,b{color:var(--ink);font-weight:650}
+code{font-family:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
+  font-size:.87em;background:#EEF2F7;color:#0F2540;padding:1px 5px;border-radius:4px;
+  border:1px solid #DDE5EF;white-space:nowrap}
+
+/* ============================ PAGES ============================ */
+@page{size:A4;margin:15mm 14mm}
+@page :first{margin:0}
+
+/* ============================ COVER ============================ */
+.cover{
+  width:210mm;height:297mm;overflow:hidden;position:relative;
+  background:linear-gradient(150deg,#060B14 0%,#0B1220 42%,#132038 78%,#0D1B33 100%);
+  color:#fff;page-break-after:always;
+}
+.cover .glow1,.cover .glow2{position:absolute;border-radius:50%;filter:blur(70px)}
+.cover .glow1{width:330mm;height:200mm;left:-90mm;top:-70mm;
+  background:radial-gradient(circle,rgba(34,211,238,.30),transparent 65%)}
+.cover .glow2{width:280mm;height:190mm;right:-100mm;bottom:-60mm;
+  background:radial-gradient(circle,rgba(167,139,250,.30),transparent 65%)}
+.cover .grid{position:absolute;inset:0;opacity:.16;
+  background-image:linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px);
+  background-size:13mm 13mm}
+.cover-in{position:relative;z-index:2;padding:30mm 20mm 18mm;height:297mm;
+  display:flex;flex-direction:column}
+.badge{display:inline-block;font-size:8.4pt;letter-spacing:.20em;text-transform:uppercase;
+  font-weight:700;color:#7FE9F7;border:1px solid rgba(34,211,238,.55);
+  background:rgba(34,211,238,.10);padding:5px 13px;border-radius:999px}
+.cover h1{font-size:31pt;line-height:1.13;font-weight:800;color:#fff;margin:14mm 0 0;
+  letter-spacing:-.02em}
+.cover h1 .hl{background:linear-gradient(90deg,#22D3EE,#A78BFA);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.cover .sub{font-size:12.6pt;color:#B4C6DE;margin-top:7mm;font-weight:400;line-height:1.55;
+  max-width:145mm}
+.rule{height:3px;width:52mm;margin:9mm 0;border-radius:2px;
+  background:linear-gradient(90deg,#22D3EE,#A78BFA 60%,transparent)}
+.cover .chips{display:flex;flex-wrap:wrap;gap:5px;max-width:150mm;margin-top:2mm}
+.chip{font-size:7.9pt;padding:3.5px 9px;border-radius:5px;font-weight:600;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);color:#CFE0F2}
+.cover .spacer{flex:1}
+.meta{display:flex;gap:14mm;border-top:1px solid rgba(255,255,255,.16);padding-top:7mm}
+.meta div{font-size:9pt}
+.meta .k{color:#7C90AB;text-transform:uppercase;letter-spacing:.13em;font-size:7.4pt;
+  font-weight:700;margin-bottom:3px}
+.meta .v{color:#E8F0FA;font-weight:600;font-size:10pt}
+
+/* ============================ TYPOGRAPHY ============================ */
+h2{font-size:17.5pt;color:var(--ink);font-weight:750;letter-spacing:-.015em;
+  margin:0 0 3mm;padding-bottom:2.5mm;border-bottom:2.5px solid var(--cyan);
+  break-after:avoid;page-break-after:avoid}
+h2 .num{color:var(--cyan-d);font-weight:800;margin-right:8px}
+h3{font-size:12.4pt;color:var(--ink);font-weight:700;margin:7mm 0 2.5mm;
+  break-after:avoid;page-break-after:avoid}
+h3::before{content:"";display:inline-block;width:4px;height:12px;background:var(--cyan);
+  border-radius:2px;margin-right:8px;vertical-align:-1px}
+h4{font-size:10.6pt;color:var(--ink);font-weight:700;margin:5mm 0 1.5mm;
+  break-after:avoid;page-break-after:avoid}
+.lead{font-size:10.8pt;color:#4B5563;margin-bottom:5mm;line-height:1.66}
+.section{page-break-before:always;padding-top:1mm}
+.section.first{page-break-before:auto}
+ul,ol{margin:0 0 9px 17px}
+li{margin-bottom:4px}
+li::marker{color:var(--cyan-d)}
+
+/* ============================ TOC ============================ */
+.toc{background:var(--tint);border:1px solid var(--line);border-radius:10px;padding:7mm 8mm}
+.toc-row{display:flex;align-items:baseline;gap:9px;padding:4.5px 0;
+  border-bottom:1px dotted #D7DEE8;font-size:10pt}
+.toc-row:last-child{border-bottom:none}
+.toc-n{color:var(--cyan-d);font-weight:800;min-width:20px;font-size:9.4pt}
+.toc-t{color:var(--ink);font-weight:600}
+.toc-d{color:var(--muted);font-size:8.9pt;margin-left:auto;text-align:right;max-width:78mm}
+
+/* ============================ CARDS / BOXES ============================ */
+.card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:5mm 5.5mm;
+  margin-bottom:4mm;break-inside:avoid;page-break-inside:avoid}
+.card-t{font-weight:700;color:var(--ink);font-size:10.5pt;margin-bottom:2mm}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3.5mm}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm}
+
+.note{border-left:4px solid var(--cyan);background:#ECFEFF;border-radius:0 8px 8px 0;
+  padding:4mm 5mm;margin:4mm 0;break-inside:avoid;page-break-inside:avoid}
+.warn{border-left:4px solid var(--amber);background:#FFFBEB;border-radius:0 8px 8px 0;
+  padding:4mm 5mm;margin:4mm 0;break-inside:avoid;page-break-inside:avoid}
+.crit{border-left:4px solid var(--red);background:#FEF2F2;border-radius:0 8px 8px 0;
+  padding:4mm 5mm;margin:4mm 0;break-inside:avoid;page-break-inside:avoid}
+.ok{border-left:4px solid var(--green);background:#ECFDF5;border-radius:0 8px 8px 0;
+  padding:4mm 5mm;margin:4mm 0;break-inside:avoid;page-break-inside:avoid}
+.box-t{font-weight:700;font-size:9.6pt;text-transform:uppercase;letter-spacing:.09em;
+  margin-bottom:2mm}
+.note .box-t{color:var(--cyan-d)} .warn .box-t{color:var(--amber-d)}
+.crit .box-t{color:var(--red-d)}  .ok .box-t{color:var(--green-d)}
+
+/* ============================ STAT TILES ============================ */
+.stat{background:linear-gradient(160deg,#0B1220,#1B2942);border-radius:9px;
+  padding:4mm 4mm;color:#fff;text-align:center;break-inside:avoid}
+.stat .n{font-size:19pt;font-weight:800;line-height:1.1;
+  background:linear-gradient(90deg,#22D3EE,#A78BFA);-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.stat .l{font-size:7.9pt;color:#9FB3CC;text-transform:uppercase;letter-spacing:.10em;
+  font-weight:600;margin-top:2mm;line-height:1.35}
+
+/* ============================ TABLES ============================ */
+table.t{width:100%;border-collapse:collapse;font-size:9.1pt;margin:3mm 0 4mm;
+  break-inside:avoid;page-break-inside:avoid}
+table.t thead th{background:var(--navy);color:#E8F0FA;text-align:left;
+  padding:2.6mm 3mm;font-weight:650;font-size:8.5pt;text-transform:uppercase;
+  letter-spacing:.07em;border:none}
+table.t thead th:first-child{border-radius:6px 0 0 0}
+table.t thead th:last-child{border-radius:0 6px 0 0}
+table.t td{padding:2.4mm 3mm;border-bottom:1px solid var(--line);vertical-align:top}
+table.t tbody tr:nth-child(even){background:var(--tint)}
+table.t.sm{font-size:8.5pt}
+.pill{display:inline-block;padding:1.5px 7px;border-radius:999px;font-size:7.8pt;
+  font-weight:700;white-space:nowrap}
+.p-cy{background:#CFFAFE;color:#0E7490} .p-vi{background:#EDE9FE;color:#5B21B6}
+.p-gr{background:#D1FAE5;color:#047857} .p-am{background:#FEF3C7;color:#B45309}
+.p-rd{background:#FEE2E2;color:#B91C1C} .p-gy{background:#E5E7EB;color:#374151}
+
+/* ============================ CODE ============================ */
+pre{background:#0B1220;color:#D7E3F4;border-radius:8px;padding:4mm 5mm;
+  font-family:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;font-size:8.2pt;
+  line-height:1.58;overflow:hidden;white-space:pre-wrap;word-break:break-word;
+  margin:3mm 0 4mm;border-left:4px solid var(--cyan);
+  break-inside:avoid;page-break-inside:avoid}
+pre .c{color:#6E8AAD;font-style:italic}   /* comment */
+pre .k{color:#7FE9F7;font-weight:600}     /* keyword */
+pre .s{color:#A9E5A0}                     /* string  */
+pre .v{color:#C9B6FF}                     /* var     */
+pre .r{color:#FF9AA2;font-weight:600}     /* danger  */
+pre.term{border-left-color:var(--green)}
+.cap{font-size:8.3pt;color:var(--muted);text-align:center;margin:-1mm 0 4mm;font-style:italic}
+
+/* ============================ FIGURE ============================ */
+figure{margin:4mm 0;break-inside:avoid;page-break-inside:avoid;text-align:center}
+figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px}
+svg{max-width:100%;height:auto}
+
+/* ============================ STAGE LIST ============================ */
+.stage{display:flex;gap:4mm;padding:3.5mm 0;border-bottom:1px solid var(--line);
+  break-inside:avoid;page-break-inside:avoid}
+.stage:last-child{border-bottom:none}
+.stage-n{flex:0 0 9mm;height:9mm;border-radius:7px;background:var(--navy);color:#7FE9F7;
+  font-weight:800;font-size:11pt;display:flex;align-items:center;justify-content:center}
+.stage-b{flex:1}
+.stage-h{font-weight:700;color:var(--ink);font-size:10.4pt;margin-bottom:1mm}
+.stage-m{font-size:8.4pt;color:var(--muted);margin-bottom:1.5mm}
+
+/* ============================ PRINT ============================ */
+@media print{
+  *{animation:none!important;transition:none!important}
+  .grid2{grid-template-columns:1fr 1fr!important}
+  .grid3{grid-template-columns:1fr 1fr 1fr!important}
+  .grid4{grid-template-columns:repeat(4,1fr)!important}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+
+<!-- ================================================================= -->
+<!--                            COUVERTURE                             -->
+<!-- ================================================================= -->
+<div class="cover">
+  <div class="glow1"></div><div class="glow2"></div><div class="grid"></div>
+  <div class="cover-in">
+    <div><span class="badge">Documentation technique · PFE</span></div>
+
+    <h1>Framework<br><span class="hl">DevSecOps Intelligent</span><br>pour la sécurité continue</h1>
+
+    <div class="rule"></div>
+
+    <div class="sub">
+      Conception et industrialisation d'une chaîne CI/CD sécurisée de bout en bout,
+      augmentée d'une couche d'intelligence artificielle locale pour la priorisation
+      des vulnérabilités selon leur <strong style="color:#DCEBFB">exploitabilité réelle</strong>.
+    </div>
+
+    <div class="chips" style="margin-top:9mm">
+      <span class="chip">GitLab CI</span><span class="chip">Gitleaks</span>
+      <span class="chip">Trivy</span><span class="chip">Semgrep</span>
+      <span class="chip">Checkov</span><span class="chip">Hadolint</span>
+      <span class="chip">Syft · SBOM</span><span class="chip">Cosign</span>
+      <span class="chip">DefectDojo</span><span class="chip">Ollama · qwen2.5</span>
+      <span class="chip">EPSS · CISA KEV</span><span class="chip">Grafana</span>
+      <span class="chip">Slack</span><span class="chip">Argo CD</span>
+      <span class="chip">k3s</span><span class="chip">Oracle Cloud ARM</span>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="meta">
+      <div>
+        <div class="k">Application cible</div>
+        <div class="v">flint_commerce — MERN</div>
+      </div>
+      <div>
+        <div class="k">Infrastructure</div>
+        <div class="v">Oracle Cloud · Ampere ARM</div>
+      </div>
+      <div>
+        <div class="k">Version</div>
+        <div class="v">1.0</div>
+      </div>
+      <div>
+        <div class="k">Date</div>
+        <div class="v">Juillet 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                          SOMMAIRE                                 -->
+<!-- ================================================================= -->
+<div class="section first">
+  <h2><span class="num">—</span>Sommaire</h2>
+  <p class="lead">Ce document décrit l'intégralité du framework : son architecture, chacun
+  de ses composants, les décisions de conception qui les justifient, et les limites
+  identifiées.</p>
+
+  <div class="toc">
+    <div class="toc-row"><span class="toc-n">1</span><span class="toc-t">Présentation générale</span><span class="toc-d">Problématique, objectifs, application cible</span></div>
+    <div class="toc-row"><span class="toc-n">2</span><span class="toc-t">Architecture globale</span><span class="toc-d">Vue d'ensemble et flux de bout en bout</span></div>
+    <div class="toc-row"><span class="toc-n">3</span><span class="toc-t">Infrastructure</span><span class="toc-d">Oracle Cloud ARM, Docker, k3s, runner</span></div>
+    <div class="toc-row"><span class="toc-n">4</span><span class="toc-t">Le pipeline CI/CD</span><span class="toc-d">Les 10 étapes détaillées une à une</span></div>
+    <div class="toc-row"><span class="toc-n">5</span><span class="toc-t">Inventaire des outils</span><span class="toc-d">Rôle, catégorie et licence de chaque outil</span></div>
+    <div class="toc-row"><span class="toc-n">6</span><span class="toc-t">DefectDojo — agrégation ASPM</span><span class="toc-d">Corrélation, déduplication, cycle de vie</span></div>
+    <div class="toc-row"><span class="toc-n">7</span><span class="toc-t">La couche d'intelligence artificielle</span><span class="toc-d">Le cœur du projet : agent de triage hybride</span></div>
+    <div class="toc-row"><span class="toc-n">8</span><span class="toc-t">La gate de sécurité</span><span class="toc-d">Blocage sur priorité réelle, pas sur CVSS brut</span></div>
+    <div class="toc-row"><span class="toc-n">9</span><span class="toc-t">Chaîne d'approvisionnement</span><span class="toc-d">SBOM CycloneDX et signature Cosign</span></div>
+    <div class="toc-row"><span class="toc-n">10</span><span class="toc-t">Déploiement GitOps</span><span class="toc-d">Argo CD, k3s et durcissement des pods</span></div>
+    <div class="toc-row"><span class="toc-n">11</span><span class="toc-t">Observabilité et alerting</span><span class="toc-d">Grafana et notifications Slack</span></div>
+    <div class="toc-row"><span class="toc-n">12</span><span class="toc-t">Résultats</span><span class="toc-d">Ce que le framework produit concrètement</span></div>
+    <div class="toc-row"><span class="toc-n">13</span><span class="toc-t">Limites et perspectives</span><span class="toc-d">Analyse critique honnête et axes d'évolution</span></div>
+    <div class="toc-row"><span class="toc-n">A</span><span class="toc-t">Annexes</span><span class="toc-d">Commandes d'exploitation et variables</span></div>
+  </div>
+
+  <h3>Comment lire ce document</h3>
+  <div class="grid3">
+    <div class="card" style="border-left:3px solid var(--cyan)">
+      <div class="card-t" style="font-size:9.6pt">Encadrés bleus</div>
+      <p style="font-size:8.9pt;margin:0">Décisions de conception et justifications techniques.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--amber)">
+      <div class="card-t" style="font-size:9.6pt">Encadrés ambre</div>
+      <p style="font-size:8.9pt;margin:0">Difficultés rencontrées et correctifs appliqués.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--red)">
+      <div class="card-t" style="font-size:9.6pt">Encadrés rouges</div>
+      <p style="font-size:8.9pt;margin:0">Limites connues et risques résiduels assumés.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                     1. PRÉSENTATION GÉNÉRALE                      -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">1</span>Présentation générale</h2>
+
+  <h3>1.1 — Problématique</h3>
+  <p>L'intégration d'outils de sécurité dans une chaîne CI/CD est aujourd'hui bien
+  documentée : il suffit d'ajouter des scanners. Le problème apparaît juste après.</p>
+
+  <p>Sur une application web réelle de taille modeste, la chaîne complète de scanners
+  produit <strong>plusieurs centaines de findings</strong> en une seule exécution. Cette
+  masse est ingérable manuellement, et elle est surtout <strong>mal hiérarchisée</strong> :
+  les outils classent par sévérité théorique (CVSS), une note attribuée en laboratoire
+  qui ignore totalement le contexte d'exécution et la probabilité réelle
+  d'exploitation.</p>
+
+  <div class="crit">
+    <div class="box-t">Le problème central</div>
+    <p style="margin:0">Une vulnérabilité <strong>CVSS 9.8</strong> jamais exploitée dans la
+    nature est traitée avec la même urgence qu'une <strong>CVSS 6.5</strong> activement
+    utilisée par des rançongiciels. Résultat : les équipes se noient, désactivent les
+    gates, et la sécurité devient un théâtre de conformité. C'est ce que la littérature
+    appelle la <em>fatigue d'alertes</em>.</p>
+  </div>
+
+  <h3>1.2 — Objectifs</h3>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-t">Objectif 1 — Automatiser</div>
+      <p style="margin:0;font-size:9.4pt">Couvrir l'ensemble des surfaces d'attaque
+      (code, dépendances, secrets, configuration, image, chaîne d'approvisionnement)
+      sans intervention humaine, à chaque commit.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Objectif 2 — Centraliser</div>
+      <p style="margin:0;font-size:9.4pt">Agréger tous les rapports hétérogènes dans un
+      référentiel unique (ASPM) avec déduplication et suivi du cycle de vie de chaque
+      vulnérabilité.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Objectif 3 — Prioriser <em>intelligemment</em></div>
+      <p style="margin:0;font-size:9.4pt">Remplacer le tri par CVSS par un score
+      d'<strong>exploitabilité réelle</strong> combinant EPSS, CISA KEV et une analyse
+      contextuelle par modèle de langage local.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Objectif 4 — Bloquer et déployer</div>
+      <p style="margin:0;font-size:9.4pt">Interrompre la livraison sur les priorités
+      réelles uniquement, puis déployer via GitOps sur un cluster durci.</p>
+    </div>
+  </div>
+
+  <h3>1.3 — L'application cible : flint_commerce</h3>
+  <p>Le framework est démontré sur <code>flint_commerce</code>, une application de commerce
+  en ligne <strong>MERN</strong> (MongoDB, Express, React, Node.js). Ce choix est délibéré :
+  il s'agit d'une application réelle, non expurgée, contenant de véritables défauts —
+  dépendances obsolètes, secrets historiquement commités, absence de durcissement.</p>
+
+  <div class="note">
+    <div class="box-t">Décision de conception</div>
+    <p style="margin:0">Le dépôt est maintenu <strong>privé</strong>. Il contient des secrets
+    réellement commités dans l'historique Git, conservés <em>intentionnellement</em> comme
+    matériel de démonstration pour Gitleaks. Toute publication publique exigerait au
+    préalable la révocation et la rotation de ces identifiants.</p>
+  </div>
+
+  <table class="t">
+    <thead><tr><th>Composant</th><th>Technologie</th><th>Rôle dans la démonstration</th></tr></thead>
+    <tbody>
+      <tr><td><strong>client</strong></td><td>React + Vite, servi par Nginx</td><td>Surface front, build multi-étapes, image non-root</td></tr>
+      <tr><td><strong>server</strong></td><td>Express / Node.js 20</td><td>API, dépendances vulnérables, secrets d'environnement</td></tr>
+      <tr><td><strong>base</strong></td><td>MongoDB 7</td><td>Persistance, stockage in-cluster sur PVC</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <div class="box-t">Portabilité</div>
+    <p style="margin:0">Le framework est <strong>agnostique de l'application</strong>. Aucune
+    étape du pipeline ne dépend du code de <code>flint_commerce</code> : les scanners
+    analysent un répertoire, un Dockerfile ou une image. Appliquer la chaîne à un autre
+    projet se limite à copier <code>.gitlab-ci.yml</code> et à définir les variables
+    d'environnement.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                     2. ARCHITECTURE GLOBALE                       -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">2</span>Architecture globale</h2>
+  <p class="lead">Le framework s'organise en six plans successifs. Chaque plan consomme
+  la sortie du précédent et l'enrichit — la donnée brute (un rapport de scanner) devient
+  progressivement une décision (déployer ou bloquer).</p>
+
+  <h3>2.1 — Les six plans</h3>
+
+  <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Les six plans du framework">
+    <defs>
+      <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+        <path d="M0,0 L7,3.2 L0,6.4 z" fill="#64748B"/>
+      </marker>
+    </defs>
+    <g font-family="Segoe UI,Arial" font-size="11">
+      <!-- P1 -->
+      <rect x="8" y="14" width="684" height="48" rx="8" fill="#F1F5F9" stroke="#CBD5E1"/>
+      <rect x="8" y="14" width="5" height="48" rx="2.5" fill="#64748B"/>
+      <text x="26" y="34" font-size="12" font-weight="700" fill="#0F172A">1 · Plan Source</text>
+      <text x="26" y="51" font-size="10" fill="#475569">Développeur → git push → dépôt GitLab privé → déclenchement du pipeline</text>
+
+      <path d="M350,62 L350,76" stroke="#64748B" stroke-width="1.6" marker-end="url(#ar)"/>
+
+      <!-- P2 -->
+      <rect x="8" y="80" width="684" height="60" rx="8" fill="#FFF7ED" stroke="#FDBA74"/>
+      <rect x="8" y="80" width="5" height="60" rx="2.5" fill="#EA580C"/>
+      <text x="26" y="100" font-size="12" font-weight="700" fill="#7C2D12">2 · Plan Détection</text>
+      <text x="26" y="117" font-size="10" fill="#9A3412">7 étapes parallélisables : secrets · dépendances · code · image · IaC · Dockerfile</text>
+      <text x="26" y="132" font-size="10" fill="#9A3412">Sortie : 8 rapports JSON hétérogènes</text>
+
+      <path d="M350,140 L350,154" stroke="#64748B" stroke-width="1.6" marker-end="url(#ar)"/>
+
+      <!-- P3 -->
+      <rect x="8" y="158" width="684" height="52" rx="8" fill="#FAF5FF" stroke="#D8B4FE"/>
+      <rect x="8" y="158" width="5" height="52" rx="2.5" fill="#7E22CE"/>
+      <text x="26" y="178" font-size="12" font-weight="700" fill="#581C87">3 · Plan Agrégation — DefectDojo</text>
+      <text x="26" y="195" font-size="10" fill="#6B21A8">Normalisation, corrélation, déduplication, cycle de vie · référentiel unique</text>
+
+      <path d="M350,210 L350,224" stroke="#64748B" stroke-width="1.6" marker-end="url(#ar)"/>
+
+      <!-- P4 -->
+      <rect x="8" y="228" width="684" height="60" rx="8" fill="#F5F3FF" stroke="#A78BFA"/>
+      <rect x="8" y="228" width="5" height="60" rx="2.5" fill="#6D28D9"/>
+      <text x="26" y="248" font-size="12" font-weight="700" fill="#4C1D95">4 · Plan Intelligence  ★ cœur du projet</text>
+      <text x="26" y="265" font-size="10" fill="#5B21B6">Enrichissement EPSS + CISA KEV · triage hybride LLM/déterministe · garde-fous</text>
+      <text x="26" y="280" font-size="10" fill="#5B21B6">Sortie : priorité P1–P4, faux positifs filtrés, remédiation, note d'audit</text>
+
+      <path d="M350,288 L350,302" stroke="#64748B" stroke-width="1.6" marker-end="url(#ar)"/>
+
+      <!-- P5 + P6 -->
+      <rect x="8" y="306" width="334" height="60" rx="8" fill="#FEF2F2" stroke="#FCA5A5"/>
+      <rect x="8" y="306" width="5" height="60" rx="2.5" fill="#DC2626"/>
+      <text x="26" y="326" font-size="12" font-weight="700" fill="#7F1D1D">5 · Plan Décision</text>
+      <text x="26" y="343" font-size="10" fill="#991B1B">gate.py bloque s'il reste</text>
+      <text x="26" y="357" font-size="10" fill="#991B1B">un P1 actif non accepté</text>
+
+      <rect x="358" y="306" width="334" height="60" rx="8" fill="#ECFDF5" stroke="#6EE7B7"/>
+      <rect x="358" y="306" width="5" height="60" rx="2.5" fill="#059669"/>
+      <text x="376" y="326" font-size="12" font-weight="700" fill="#064E3B">6 · Plan Livraison</text>
+      <text x="376" y="343" font-size="10" fill="#065F46">Argo CD synchronise l'état Git</text>
+      <text x="376" y="357" font-size="10" fill="#065F46">vers le cluster k3s durci</text>
+
+      <path d="M175,366 L175,374 L525,374 L525,366" stroke="#64748B" stroke-width="1.4" fill="none"/>
+    </g>
+  </svg>
+  <p class="cap">Figure 1 — Les six plans logiques du framework</p>
+
+  <h3>2.2 — Vue d'ensemble détaillée</h3>
+  <p>Le schéma ci-dessous représente l'implémentation complète, avec les composants réels
+  et les flux qui les relient.</p>
+
+  <svg viewBox="0 0 700 616" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Architecture d'implémentation complète">
+    <defs>
+      <marker id="a4" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto">
+        <path d="M0,0 L6.5,3 L0,6 z" fill="#475569"/>
+      </marker>
+      <marker id="a4v" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto">
+        <path d="M0,0 L6.5,3 L0,6 z" fill="#7C3AED"/>
+      </marker>
+    </defs>
+    <g font-family="Segoe UI,Arial">
+
+      <!-- ============ EXTÉRIEUR : poste + GitLab ============ -->
+      <rect x="24" y="8" width="132" height="42" rx="7" fill="#F1F5F9" stroke="#94A3B8"/>
+      <text x="90" y="26" text-anchor="middle" font-size="10" font-weight="700" fill="#0F172A">Développeur</text>
+      <text x="90" y="40" text-anchor="middle" font-size="8" fill="#475569">poste de travail</text>
+
+      <rect x="212" y="8" width="176" height="42" rx="7" fill="#FFF7ED" stroke="#FB923C"/>
+      <text x="300" y="26" text-anchor="middle" font-size="10" font-weight="700" fill="#7C2D12">Dépôt GitLab privé</text>
+      <text x="300" y="40" text-anchor="middle" font-size="8" fill="#9A3412">flint_commerce</text>
+
+      <rect x="444" y="8" width="176" height="42" rx="7" fill="#FFF7ED" stroke="#FB923C"/>
+      <text x="532" y="26" text-anchor="middle" font-size="10" font-weight="700" fill="#7C2D12">Container Registry</text>
+      <text x="532" y="40" text-anchor="middle" font-size="8" fill="#9A3412">image + digest + signature</text>
+
+      <path d="M156,29 L208,29" stroke="#475569" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="182" y="24" text-anchor="middle" font-size="7.5" fill="#475569">git push</text>
+
+      <!-- ============ VM ORACLE ============ -->
+      <rect x="10" y="72" width="680" height="536" rx="10" fill="#FAFBFC"
+            stroke="#CBD5E1" stroke-dasharray="5 3"/>
+      <rect x="24" y="64" width="290" height="16" rx="4" fill="#0B1220"/>
+      <text x="34" y="76" font-size="8.5" font-weight="700" fill="#7FE9F7">
+        VM ORACLE CLOUD · AMPERE ARM (aarch64) · UBUNTU 24.04</text>
+
+      <!-- Pipeline -->
+      <rect x="28" y="100" width="196" height="74" rx="8" fill="#FEF3C7" stroke="#FBBF24"/>
+      <text x="126" y="122" text-anchor="middle" font-size="10" font-weight="700" fill="#78350F">Pipeline GitLab CI</text>
+      <text x="126" y="137" text-anchor="middle" font-size="8" fill="#92400E">runner oracle-arm · 10 étapes</text>
+      <text x="126" y="151" text-anchor="middle" font-size="8" fill="#92400E">Gitleaks · Trivy · Semgrep</text>
+      <text x="126" y="165" text-anchor="middle" font-size="8" fill="#92400E">Checkov · Hadolint · Syft · Cosign</text>
+
+      <!-- DefectDojo -->
+      <rect x="270" y="100" width="176" height="74" rx="8" fill="#FAF5FF" stroke="#C084FC"/>
+      <text x="358" y="122" text-anchor="middle" font-size="10" font-weight="700" fill="#581C87">DefectDojo</text>
+      <text x="358" y="137" text-anchor="middle" font-size="8" fill="#6B21A8">agrégation ASPM</text>
+      <text x="358" y="151" text-anchor="middle" font-size="8" fill="#6B21A8">normalise · dédoublonne</text>
+      <text x="358" y="165" text-anchor="middle" font-size="8" fill="#6B21A8">PostgreSQL · cycle de vie</text>
+
+      <!-- Grafana / Slack -->
+      <rect x="492" y="100" width="176" height="34" rx="7" fill="#ECFDF5" stroke="#6EE7B7"/>
+      <text x="580" y="115" text-anchor="middle" font-size="9.5" font-weight="700" fill="#064E3B">Grafana</text>
+      <text x="580" y="127" text-anchor="middle" font-size="7.5" fill="#065F46">tableaux de bord · DORA</text>
+
+      <rect x="492" y="146" width="176" height="34" rx="7" fill="#F5F3FF" stroke="#A78BFA"/>
+      <text x="580" y="161" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4C1D95">Slack</text>
+      <text x="580" y="173" text-anchor="middle" font-size="7.5" fill="#5B21B6">alertes P1 / P2</text>
+
+      <!-- Couche IA -->
+      <rect x="228" y="222" width="260" height="98" rx="8" fill="#EDE9FE" stroke="#8B5CF6" stroke-width="1.6"/>
+      <text x="358" y="242" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4C1D95">Couche Intelligence Artificielle</text>
+      <rect x="240" y="252" width="236" height="19" rx="4" fill="#fff" stroke="#C4B5FD"/>
+      <text x="358" y="265" text-anchor="middle" font-size="8" fill="#5B21B6">triage_agent.py — orchestration + garde-fous</text>
+      <rect x="240" y="275" width="236" height="19" rx="4" fill="#fff" stroke="#C4B5FD"/>
+      <text x="358" y="288" text-anchor="middle" font-size="8" fill="#5B21B6">EPSS (FIRST) + CISA KEV — exploitabilité réelle</text>
+      <rect x="240" y="298" width="236" height="19" rx="4" fill="#fff" stroke="#C4B5FD"/>
+      <text x="358" y="311" text-anchor="middle" font-size="8" fill="#5B21B6">Ollama qwen2.5:7b — LLM local, hors ligne</text>
+
+      <!-- Gate -->
+      <rect x="270" y="366" width="176" height="46" rx="8" fill="#FEE2E2" stroke="#F87171"/>
+      <text x="358" y="385" text-anchor="middle" font-size="10" font-weight="700" fill="#7F1D1D">Gate — gate.py</text>
+      <text x="358" y="400" text-anchor="middle" font-size="8" fill="#991B1B">bloque si un ai-p1 reste actif</text>
+
+      <!-- Argo CD -->
+      <rect x="270" y="446" width="176" height="46" rx="8" fill="#DBEAFE" stroke="#60A5FA"/>
+      <text x="358" y="465" text-anchor="middle" font-size="10" font-weight="700" fill="#1E3A8A">Argo CD</text>
+      <text x="358" y="480" text-anchor="middle" font-size="8" fill="#1D4ED8">GitOps — la CI n'accède pas au cluster</text>
+
+      <!-- Cluster k3s -->
+      <rect x="28" y="522" width="640" height="70" rx="8" fill="#EFF6FF" stroke="#93C5FD"/>
+      <text x="44" y="540" font-size="9.5" font-weight="700" fill="#1E3A8A">Cluster k3s — namespace flint (pods durcis : non-root, capabilities ALL droppées)</text>
+      <rect x="44" y="548" width="190" height="32" rx="6" fill="#fff" stroke="#93C5FD"/>
+      <text x="139" y="562" text-anchor="middle" font-size="8.5" font-weight="600" fill="#1E3A8A">flint-server</text>
+      <text x="139" y="573" text-anchor="middle" font-size="7.5" fill="#1D4ED8">Node.js · UID 1000 · FS lecture seule</text>
+      <rect x="248" y="548" width="190" height="32" rx="6" fill="#fff" stroke="#93C5FD"/>
+      <text x="343" y="562" text-anchor="middle" font-size="8.5" font-weight="600" fill="#1E3A8A">flint-client</text>
+      <text x="343" y="573" text-anchor="middle" font-size="7.5" fill="#1D4ED8">Nginx non privilégié · UID 101</text>
+      <rect x="452" y="548" width="190" height="32" rx="6" fill="#fff" stroke="#93C5FD"/>
+      <text x="547" y="562" text-anchor="middle" font-size="8.5" font-weight="600" fill="#065F46">MongoDB 7</text>
+      <text x="547" y="573" text-anchor="middle" font-size="7.5" fill="#047857">PVC 2 Gi · service interne</text>
+
+      <!-- ============ FLUX ============ -->
+      <!-- dépôt -> pipeline -->
+      <path d="M256,50 L256,90 L138,90 L138,96" stroke="#475569" stroke-width="1.5"
+            fill="none" marker-end="url(#a4)"/>
+      <text x="150" y="87" font-size="7.5" fill="#475569">déclenche</text>
+
+      <!-- pipeline -> registry -->
+      <path d="M224,116 L246,116 L246,60 L440,60" stroke="#475569" stroke-width="1.5"
+            fill="none" marker-end="url(#a4)"/>
+      <text x="352" y="56" text-anchor="middle" font-size="7.5" fill="#475569">image par digest + SBOM + signature</text>
+
+      <!-- pipeline -> dojo -->
+      <path d="M224,150 L266,150" stroke="#475569" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="245" y="145" text-anchor="middle" font-size="7.5" fill="#475569">8 rapports</text>
+
+      <!-- dojo -> grafana -->
+      <path d="M446,117 L488,117" stroke="#475569" stroke-width="1.5" marker-end="url(#a4)"/>
+      <!-- IA -> slack -->
+      <path d="M488,252 L520,252 L520,184" stroke="#7C3AED" stroke-width="1.5"
+            fill="none" marker-end="url(#a4v)"/>
+
+      <!-- BOUCLE dojo <-> IA -->
+      <path d="M330,174 L330,218" stroke="#7C3AED" stroke-width="1.7" marker-end="url(#a4v)"/>
+      <text x="322" y="199" text-anchor="end" font-size="7.5" fill="#6D28D9">findings bruts</text>
+      <path d="M392,218 L392,178" stroke="#7C3AED" stroke-width="1.7" marker-end="url(#a4v)"/>
+      <text x="400" y="199" font-size="7.5" fill="#6D28D9">priorités P1–P4 + faux positifs</text>
+
+      <!-- dojo -> gate (route gauche) -->
+      <path d="M270,160 L206,160 L206,389 L266,389" stroke="#475569" stroke-width="1.5"
+            fill="none" marker-end="url(#a4)"/>
+      <text x="210" y="352" font-size="7.5" fill="#475569">findings actifs</text>
+      <text x="210" y="363" font-size="7.5" fill="#475569">tag ai-p1</text>
+
+      <!-- gate -> argo -->
+      <path d="M358,412 L358,442" stroke="#475569" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="366" y="431" font-size="7.5" fill="#475569">zéro P1 → autorisé</text>
+
+      <!-- argo -> cluster -->
+      <path d="M358,492 L358,518" stroke="#475569" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="366" y="509" font-size="7.5" fill="#475569">synchronisation GitOps</text>
+
+      <!-- registry -> cluster -->
+      <path d="M620,29 L676,29 L676,557 L646,557" stroke="#475569" stroke-width="1.5"
+            fill="none" marker-end="url(#a4)"/>
+      <text x="672" y="300" text-anchor="middle" font-size="7.5" fill="#475569"
+            transform="rotate(-90 672 300)">pull de l'image publiée</text>
+    </g>
+  </svg>
+  <p class="cap">Figure 2 — Architecture d'implémentation complète</p>
+
+  <p style="font-size:9pt;color:#6B7280;margin-top:-1mm">Une version haute résolution de ce
+  schéma, éditable et enrichie des logos officiels, est disponible dans le fichier
+  <code>architecture_eraser.png</code> livré avec le projet.</p>
+
+  <div class="note">
+    <div class="box-t">La boucle de rétroaction</div>
+    <p style="margin:0">Le flux notable est <strong>bidirectionnel</strong> entre DefectDojo
+    et la couche IA : DefectDojo fournit les findings bruts, l'agent renvoie les priorités
+    et les faux positifs, qui deviennent l'état de référence pour la gate. C'est cette
+    boucle qui matérialise le terme « sécurité <strong>continue</strong> » — le système
+    s'enrichit à chaque exécution plutôt que de repartir de zéro.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                       3. INFRASTRUCTURE                           -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">3</span>Infrastructure</h2>
+  <p class="lead">L'ensemble du framework — CI, agrégation, LLM, observabilité et cluster
+  — tourne sur une <strong>unique machine virtuelle gratuite</strong>. Cette contrainte a
+  guidé la totalité des choix techniques.</p>
+
+  <h3>3.1 — La machine hôte</h3>
+  <table class="t">
+    <thead><tr><th>Caractéristique</th><th>Valeur</th><th>Conséquence sur la conception</th></tr></thead>
+    <tbody>
+      <tr><td>Fournisseur</td><td>Oracle Cloud — offre <em>Always Free</em></td><td>Coût nul, adapté à un projet académique</td></tr>
+      <tr><td>Processeur</td><td>Ampere Altra — <strong>aarch64 (ARM)</strong></td><td>Toutes les images doivent être multi-architecture</td></tr>
+      <tr><td>Système</td><td>Ubuntu 24.04 LTS</td><td>Python géré par le système → contrainte PEP 668</td></tr>
+      <tr><td>Exécution</td><td>Docker + GitLab Runner (exécuteur <code>docker</code>)</td><td>Chaque job s'exécute dans un conteneur isolé</td></tr>
+      <tr><td>Orchestration</td><td>k3s (Kubernetes allégé)</td><td>Empreinte mémoire compatible avec la VM</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — l'architecture ARM</div>
+    <p style="margin:0 0 5px">Une part importante de l'écosystème DevSecOps ne publie que
+    des images <code>amd64</code>. Plusieurs blocages en ont découlé :</p>
+    <ul style="margin:0 0 0 16px;font-size:9.4pt">
+      <li>DefectDojo devait être <strong>construit localement</strong> (<code>docker compose build</code>
+      avant <code>up -d</code>) — un <code>up</code> direct tire les images amd64 et échoue
+      sur <code>exec format error</code>.</li>
+      <li>Cosign devait être épinglé au binaire <code>cosign-linux-arm64</code> v2.4.3 : la
+      version du paquet Alpine avait supprimé l'option <code>--tlog-upload=false</code>.</li>
+      <li>Le pipeline devait être forcé sur le runner ARM via <code>default: tags: [oracle-arm]</code>,
+      sinon GitLab répartissait les jobs sur ses runners partagés amd64.</li>
+    </ul>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — le double pare-feu</div>
+    <p style="margin:0">Oracle applique <strong>deux</strong> couches de filtrage : les
+    <em>Security Lists</em> côté cloud <strong>et</strong> les règles <code>iptables</code>
+    de l'hôte. Ouvrir un port dans la console ne suffit donc pas. Deux pannes en ont
+    découlé : la résolution DNS de k3s (CoreDNS) était cassée jusqu'à l'autorisation
+    explicite des plages <code>10.42.0.0/16</code> et <code>10.43.0.0/16</code> ; et Ollama
+    était injoignable depuis les jobs CI jusqu'à l'ouverture du port 11434 au réseau
+    <code>172.17.0.0/16</code> (le pont Docker).</p>
+    <pre class="term"><span class="c"># Autoriser les réseaux internes k3s et le pont Docker</span>
+iptables -I INPUT -s 10.42.0.0/16 -j ACCEPT
+iptables -I INPUT -s 10.43.0.0/16 -j ACCEPT
+iptables -I INPUT -s 172.17.0.0/16 -p tcp --dport 11434 -j ACCEPT
+netfilter-persistent save</pre>
+  </div>
+
+  <h3>3.2 — Le modèle d'exposition</h3>
+  <p>Aucune interface d'administration n'est publiée sur Internet. DefectDojo, Grafana et
+  Argo CD restent liés à la boucle locale et ne sont atteints qu'à travers un
+  <strong>tunnel SSH</strong>. C'est la surface d'attaque minimale : un service
+  d'administration compromis exposerait l'ensemble du référentiel de vulnérabilités.</p>
+
+  <pre class="term"><span class="c"># Depuis le poste de travail : rediriger les UI en local</span>
+ssh -L 8080:localhost:8080 <span class="c"># DefectDojo</span> \
+    -L 3000:localhost:3000 <span class="c"># Grafana</span> \
+    -L 8081:localhost:8081 <span class="c"># Argo CD</span> \
+    ubuntu@&lt;ip-publique&gt;</pre>
+
+  <div class="note">
+    <div class="box-t">Runner ou conteneur de job ?</div>
+    <p style="margin:0">Distinction essentielle : le <strong>runner</strong> est l'agent
+    permanent installé sur la VM ; il ne contient aucun outil de sécurité. À chaque job,
+    il démarre un <strong>conteneur éphémère</strong> à partir de l'image déclarée
+    (<code>aquasec/trivy</code>, <code>semgrep/semgrep</code>…), y exécute le script, puis le
+    détruit. Aucun scanner n'est jamais installé sur l'hôte — d'où la reproductibilité
+    parfaite du pipeline.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                     4. LE PIPELINE CI/CD                          -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">4</span>Le pipeline CI/CD</h2>
+  <p class="lead">Le fichier <code>.gitlab-ci.yml</code> définit <strong>10 étapes
+  séquentielles</strong>. Les six premières couvrent la détection, les quatre dernières
+  la décision et la livraison.</p>
+
+  <h3>4.1 — Vue d'ensemble</h3>
+
+  <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Les dix étapes du pipeline">
+    <defs>
+      <marker id="ar2" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto">
+        <path d="M0,0 L6.5,3 L0,6 z" fill="#94A3B8"/>
+      </marker>
+    </defs>
+    <g font-family="Segoe UI,Arial">
+      <!-- ligne 1 -->
+      <g>
+        <rect x="6"   y="20" width="124" height="44" rx="7" fill="#FEF3C7" stroke="#FCD34D"/>
+        <text x="68" y="38" font-size="9.5" font-weight="700" text-anchor="middle" fill="#78350F">1 · secrets</text>
+        <text x="68" y="53" font-size="9"   text-anchor="middle" fill="#92400E">Gitleaks</text>
+
+        <rect x="144" y="20" width="124" height="44" rx="7" fill="#FEF3C7" stroke="#FCD34D"/>
+        <text x="206" y="38" font-size="9.5" font-weight="700" text-anchor="middle" fill="#78350F">2 · sca</text>
+        <text x="206" y="53" font-size="9"   text-anchor="middle" fill="#92400E">Trivy fs</text>
+
+        <rect x="282" y="20" width="124" height="44" rx="7" fill="#FEF3C7" stroke="#FCD34D"/>
+        <text x="344" y="38" font-size="9.5" font-weight="700" text-anchor="middle" fill="#78350F">3 · sast</text>
+        <text x="344" y="53" font-size="9"   text-anchor="middle" fill="#92400E">Semgrep</text>
+
+        <rect x="420" y="20" width="124" height="44" rx="7" fill="#DBEAFE" stroke="#93C5FD"/>
+        <text x="482" y="38" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1E3A8A">4 · build</text>
+        <text x="482" y="53" font-size="9"   text-anchor="middle" fill="#1D4ED8">Docker + push</text>
+
+        <rect x="558" y="20" width="124" height="44" rx="7" fill="#FEF3C7" stroke="#FCD34D"/>
+        <text x="620" y="38" font-size="9.5" font-weight="700" text-anchor="middle" fill="#78350F">5 · iac</text>
+        <text x="620" y="53" font-size="9"   text-anchor="middle" fill="#92400E">Checkov</text>
+
+        <path d="M130,42 L142,42" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <path d="M268,42 L280,42" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <path d="M406,42 L418,42" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <path d="M544,42 L556,42" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+      </g>
+      <path d="M682,64 L690,64 L690,80 L10,80 L10,96" stroke="#94A3B8" stroke-width="1.5"
+            fill="none" marker-end="url(#ar2)"/>
+      <!-- ligne 2 -->
+      <g>
+        <rect x="6"   y="102" width="124" height="44" rx="7" fill="#FEF3C7" stroke="#FCD34D"/>
+        <text x="68" y="120" font-size="9.5" font-weight="700" text-anchor="middle" fill="#78350F">6 · container</text>
+        <text x="68" y="135" font-size="9"   text-anchor="middle" fill="#92400E">Trivy + Hadolint</text>
+
+        <rect x="144" y="102" width="124" height="44" rx="7" fill="#DCFCE7" stroke="#86EFAC"/>
+        <text x="206" y="120" font-size="9.5" font-weight="700" text-anchor="middle" fill="#14532D">7 · supply-chain</text>
+        <text x="206" y="135" font-size="9"   text-anchor="middle" fill="#166534">Syft + Cosign</text>
+
+        <rect x="282" y="102" width="124" height="44" rx="7" fill="#F3E8FF" stroke="#D8B4FE"/>
+        <text x="344" y="120" font-size="9.5" font-weight="700" text-anchor="middle" fill="#581C87">8 · upload</text>
+        <text x="344" y="135" font-size="9"   text-anchor="middle" fill="#6B21A8">DefectDojo</text>
+
+        <rect x="420" y="102" width="124" height="44" rx="7" fill="#EDE9FE" stroke="#A78BFA"/>
+        <text x="482" y="120" font-size="9.5" font-weight="700" text-anchor="middle" fill="#4C1D95">9 · ai-triage</text>
+        <text x="482" y="135" font-size="9"   text-anchor="middle" fill="#5B21B6">agent + Ollama</text>
+
+        <rect x="558" y="102" width="124" height="44" rx="7" fill="#FEE2E2" stroke="#FCA5A5"/>
+        <text x="620" y="120" font-size="9.5" font-weight="700" text-anchor="middle" fill="#7F1D1D">10 · gates</text>
+        <text x="620" y="135" font-size="9"   text-anchor="middle" fill="#991B1B">gate.py</text>
+
+        <path d="M130,124 L142,124" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <path d="M268,124 L280,124" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <path d="M406,124 L418,124" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+        <path d="M544,124 L556,124" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#ar2)"/>
+      </g>
+      <g font-size="8.5" fill="#64748B">
+        <rect x="6" y="166" width="11" height="11" rx="2.5" fill="#FEF3C7" stroke="#FCD34D"/>
+        <text x="23" y="175">Détection</text>
+        <rect x="86" y="166" width="11" height="11" rx="2.5" fill="#DBEAFE" stroke="#93C5FD"/>
+        <text x="103" y="175">Construction</text>
+        <rect x="182" y="166" width="11" height="11" rx="2.5" fill="#DCFCE7" stroke="#86EFAC"/>
+        <text x="199" y="175">Chaîne d'appro.</text>
+        <rect x="292" y="166" width="11" height="11" rx="2.5" fill="#EDE9FE" stroke="#A78BFA"/>
+        <text x="309" y="175">Intelligence</text>
+        <rect x="386" y="166" width="11" height="11" rx="2.5" fill="#FEE2E2" stroke="#FCA5A5"/>
+        <text x="403" y="175">Décision</text>
+      </g>
+    </g>
+  </svg>
+  <p class="cap">Figure 3 — Enchaînement des 10 étapes du pipeline</p>
+
+  <div class="note">
+    <div class="box-t">Décision — <code>dependencies: []</code> sur les jobs de source</div>
+    <p style="margin:0">Par défaut, GitLab télécharge dans chaque job <em>tous</em> les
+    artefacts des étapes précédentes. Conséquence observée : Trivy scannait
+    <code>gitleaks-report.json</code> et y redétectait les secrets qu'il contenait,
+    gonflant artificiellement le total de findings. Déclarer <code>dependencies: []</code>
+    sur chaque job qui n'analyse que les sources supprime ce bruit.</p>
+  </div>
+
+  <h3>4.2 — Les étapes une par une</h3>
+
+  <div class="stage">
+    <div class="stage-n">1</div>
+    <div class="stage-b">
+      <div class="stage-h">secrets — détection de secrets · <span class="pill p-am">Gitleaks</span></div>
+      <div class="stage-m">Image <code>zricethezav/gitleaks</code> · sortie <code>gitleaks-report.json</code></div>
+      <p style="margin:0;font-size:9.4pt">Parcourt <strong>l'ensemble de l'historique Git</strong>,
+      pas seulement l'état courant. C'est le point clé : un secret supprimé dans un commit
+      ultérieur reste extractible depuis l'historique et demeure donc compromis. Le drapeau
+      <code>--exit-code 0</code> empêche l'échec immédiat : la décision de blocage est
+      déléguée à la gate finale, après le triage IA.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">2</div>
+    <div class="stage-b">
+      <div class="stage-h">sca — analyse des dépendances · <span class="pill p-am">Trivy</span></div>
+      <div class="stage-m">Scanners <code>vuln,secret,misconfig</code> · sorties table + JSON</div>
+      <p style="margin:0;font-size:9.4pt">Analyse l'arbre de dépendances npm et le confronte
+      aux bases de vulnérabilités publiques. C'est l'étape la plus productive en volume :
+      une application Node.js tire couramment plus d'un millier de paquets transitifs.
+      Deux formats sont produits — une table lisible dans les journaux du job, un JSON
+      destiné à DefectDojo.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">3</div>
+    <div class="stage-b">
+      <div class="stage-h">sast — analyse statique du code · <span class="pill p-am">Semgrep</span></div>
+      <div class="stage-m">Règles <code>p/javascript</code> + <code>p/security-audit</code></div>
+      <p style="margin:0;font-size:9.4pt">Recherche les motifs de code dangereux écrits par
+      les développeurs : injections, désérialisation non sûre, cryptographie faible,
+      validation d'entrée absente. Là où Trivy trouve les failles <em>importées</em>,
+      Semgrep trouve les failles <em>écrites</em>.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">4</div>
+    <div class="stage-b">
+      <div class="stage-h">build — construction et publication · <span class="pill p-cy">Docker-in-Docker</span></div>
+      <div class="stage-m">Publie dans le registre GitLab · capture le <strong>digest</strong> via artefact dotenv</div>
+      <p style="margin:0;font-size:9.4pt">Construit les deux images puis les pousse au
+      registre. L'élément essentiel est la capture du <strong>digest</strong>
+      (<code>sha256:…</code>) réémis dans <code>build.env</code> : les étapes suivantes
+      référencent l'image par son empreinte cryptographique et non par son étiquette, qui
+      est mutable.</p>
+    </div>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — TLS avec Docker-in-Docker</div>
+    <p style="margin:0 0 4px">Le service DinD échouait sur
+    <code>/certs/client/ca.pem: no such file</code>. Avec l'exécuteur <code>docker</code>, le
+    volume de certificats n'est pas partagé entre le conteneur de service et celui du job.
+    Correctif : désactiver TLS sur le réseau interne du job — isolé et éphémère — et
+    supprimer l'alias explicite, qui entrait en collision avec l'alias automatique.</p>
+    <pre>variables:
+  <span class="k">DOCKER_HOST</span>: <span class="s">"tcp://docker:2375"</span>
+  <span class="k">DOCKER_TLS_CERTDIR</span>: <span class="s">""</span>   <span class="c"># TLS désactivé : réseau de job isolé</span></pre>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">5</div>
+    <div class="stage-b">
+      <div class="stage-h">iac — configuration d'infrastructure · <span class="pill p-am">Checkov</span></div>
+      <div class="stage-m">Analyse les manifestes Kubernetes et la configuration déclarative</div>
+      <p style="margin:0;font-size:9.4pt">Vérifie les manifestes <code>k8s/</code> contre un
+      référentiel de bonnes pratiques : conteneurs privilégiés, absence de limites de
+      ressources, exécution en <code>root</code>, montages sensibles. Un repli écrit un JSON
+      vide et valide si aucun résultat n'est produit, afin que l'étape d'import ne casse
+      jamais.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">6</div>
+    <div class="stage-b">
+      <div class="stage-h">container-scan — image et Dockerfile · <span class="pill p-am">Trivy image</span> <span class="pill p-am">Hadolint</span></div>
+      <div class="stage-m">Deux jobs parallèles sur les deux images du projet</div>
+      <p style="margin:0;font-size:9.4pt">Trivy analyse ici le <strong>système d'exploitation
+      de l'image</strong> — les paquets Alpine, pas les dépendances applicatives déjà
+      couvertes à l'étape 2. Hadolint audite la qualité des <code>Dockerfile</code> :
+      étiquettes flottantes, exécution en root, couches inutiles.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">7</div>
+    <div class="stage-b">
+      <div class="stage-h">supply-chain — SBOM et signature · <span class="pill p-gr">Syft</span> <span class="pill p-gr">Cosign</span></div>
+      <div class="stage-m">CycloneDX JSON, conservé 30 jours · signature par digest</div>
+      <p style="margin:0;font-size:9.4pt">Produit la nomenclature logicielle et signe
+      cryptographiquement les images. Détaillé en <strong>section 9</strong>.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">8</div>
+    <div class="stage-b">
+      <div class="stage-h">upload — import vers DefectDojo · <span class="pill p-vi">API REST</span></div>
+      <div class="stage-m">8 imports via <code>/api/v2/import-scan/</code></div>
+      <p style="margin:0;font-size:9.4pt">Une fonction shell <code>upload()</code> factorise
+      les appels, avec un garde <code>[ -f "$file" ]</code> pour ignorer proprement un rapport
+      absent. Le paramètre <code>test_title</code> est indispensable pour distinguer les trois
+      imports Trivy (système de fichiers, image serveur, image client), qui partagent le
+      même <code>scan_type</code>.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">9</div>
+    <div class="stage-b">
+      <div class="stage-h">ai-triage — triage intelligent · <span class="pill p-vi">Ollama qwen2.5:7b</span></div>
+      <div class="stage-m">Image <code>python:3.12-alpine</code> · déclenchement manuel ou planifié</div>
+      <p style="margin:0;font-size:9.4pt">Le cœur du projet, détaillé en
+      <strong>section 7</strong>. Configuré en <code>when: manual</code> pour les pipelines
+      ordinaires et en automatique pour les pipelines planifiés — l'inférence sur processeur
+      est trop lente pour bloquer chaque commit.</p>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-n">10</div>
+    <div class="stage-b">
+      <div class="stage-h">gates — décision de livraison · <span class="pill p-rd">gate.py</span></div>
+      <div class="stage-m">Seul job <strong>sans</strong> <code>allow_failure</code> — il bloque réellement</div>
+      <p style="margin:0;font-size:9.4pt">Interroge DefectDojo et échoue s'il subsiste des
+      findings prioritaires. Détaillé en <strong>section 8</strong>.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="box-t">Décision — <code>allow_failure: true</code> sur les scanners</div>
+    <p style="margin:0">Tous les jobs de détection sont non bloquants. Ce n'est pas un
+    relâchement : c'est une <strong>séparation des responsabilités</strong>. Les scanners
+    <em>observent</em> et rapportent ; une seule instance — la gate, après enrichissement et
+    triage — <em>décide</em>. Bloquer sur la sortie brute d'un scanner reviendrait à
+    revenir au tri par CVSS que le projet cherche précisément à dépasser.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                      5. INVENTAIRE OUTILS                         -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">5</span>Inventaire des outils</h2>
+  <p class="lead">L'ensemble de la chaîne repose exclusivement sur des logiciels
+  <strong>libres et gratuits</strong> — un critère structurant pour la reproductibilité du
+  projet.</p>
+
+  <table class="t sm">
+    <thead><tr><th>Étape</th><th>Outil</th><th>Catégorie</th><th>Rôle</th><th>Licence</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Gitleaks</strong></td><td>Secrets</td><td>Détecte clés et jetons dans tout l'historique Git</td><td>MIT</td></tr>
+      <tr><td>2</td><td><strong>Trivy</strong></td><td>SCA</td><td>CVE des dépendances applicatives</td><td>Apache 2.0</td></tr>
+      <tr><td>3</td><td><strong>Semgrep</strong></td><td>SAST</td><td>Motifs de code vulnérables</td><td>LGPL 2.1</td></tr>
+      <tr><td>4</td><td><strong>Docker / BuildKit</strong></td><td>Construction</td><td>Images multi-étapes, publication par digest</td><td>Apache 2.0</td></tr>
+      <tr><td>5</td><td><strong>Checkov</strong></td><td>IaC</td><td>Mauvaises configurations Kubernetes</td><td>Apache 2.0</td></tr>
+      <tr><td>6</td><td><strong>Trivy image</strong></td><td>Conteneur</td><td>CVE des paquets système de l'image</td><td>Apache 2.0</td></tr>
+      <tr><td>6</td><td><strong>Hadolint</strong></td><td>Lint</td><td>Bonnes pratiques Dockerfile</td><td>GPL 3.0</td></tr>
+      <tr><td>7</td><td><strong>Syft</strong></td><td>SBOM</td><td>Nomenclature CycloneDX</td><td>Apache 2.0</td></tr>
+      <tr><td>7</td><td><strong>Cosign</strong></td><td>Signature</td><td>Signature cryptographique des images</td><td>Apache 2.0</td></tr>
+      <tr><td>8</td><td><strong>DefectDojo</strong></td><td>ASPM</td><td>Agrégation, corrélation, cycle de vie</td><td>BSD 3</td></tr>
+      <tr><td>9</td><td><strong>Ollama + qwen2.5:7b</strong></td><td>IA</td><td>Analyse contextuelle locale</td><td>MIT / Apache 2.0</td></tr>
+      <tr><td>9</td><td><strong>EPSS (FIRST)</strong></td><td>Renseignement</td><td>Probabilité d'exploitation à 30 jours</td><td>Gratuit</td></tr>
+      <tr><td>9</td><td><strong>CISA KEV</strong></td><td>Renseignement</td><td>Catalogue des failles activement exploitées</td><td>Domaine public</td></tr>
+      <tr><td>10</td><td><strong>gate.py</strong></td><td>Décision</td><td>Blocage sur priorité réelle</td><td>Développement propre</td></tr>
+      <tr><td>—</td><td><strong>Grafana</strong></td><td>Observabilité</td><td>Tableaux de bord sur PostgreSQL</td><td>AGPL 3.0</td></tr>
+      <tr><td>—</td><td><strong>Slack</strong></td><td>Alerting</td><td>Notification des priorités P1/P2</td><td>SaaS gratuit</td></tr>
+      <tr><td>—</td><td><strong>Argo CD</strong></td><td>GitOps</td><td>Synchronisation déclarative du cluster</td><td>Apache 2.0</td></tr>
+      <tr><td>—</td><td><strong>k3s</strong></td><td>Orchestration</td><td>Kubernetes allégé</td><td>Apache 2.0</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5.1 — Pourquoi cette combinaison</h3>
+  <p>Chaque outil couvre une surface d'attaque que les autres ne voient pas. Le tableau
+  suivant met en évidence l'absence de redondance :</p>
+
+  <table class="t">
+    <thead><tr><th>Surface d'attaque</th><th>Outil unique compétent</th><th>Ce que les autres manquent</th></tr></thead>
+    <tbody>
+      <tr><td>Secret dans l'historique Git</td><td>Gitleaks</td><td>Les autres ne lisent que l'arbre courant</td></tr>
+      <tr><td>Dépendance npm vulnérable</td><td>Trivy fs</td><td>Semgrep ne lit pas les <code>node_modules</code></td></tr>
+      <tr><td>Faille écrite par le développeur</td><td>Semgrep</td><td>Trivy ne connaît que des CVE publiées</td></tr>
+      <tr><td>Paquet système de l'image</td><td>Trivy image</td><td>Trivy fs n'inspecte pas les couches de l'image</td></tr>
+      <tr><td>Conteneur privilégié</td><td>Checkov</td><td>Aucun scanner de code ne lit les manifestes</td></tr>
+      <tr><td>Provenance de l'image</td><td>Syft + Cosign</td><td>Aucun scanner ne prouve l'origine</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================= -->
+<!--                       6. DEFECTDOJO                               -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">6</span>DefectDojo — agrégation ASPM</h2>
+  <p class="lead">Sans agrégation, huit rapports JSON dans huit formats différents restent
+  huit silos. DefectDojo est la plateforme <em>Application Security Posture Management</em>
+  qui les unifie en un référentiel unique et durable.</p>
+
+  <h3>6.1 — Ce que DefectDojo apporte réellement</h3>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-t">Normalisation</div>
+      <p style="margin:0;font-size:9.4pt">Chaque format propriétaire est converti vers un
+      modèle <em>Finding</em> commun : titre, sévérité, composant, fichier, identifiants de
+      vulnérabilité.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Déduplication</div>
+      <p style="margin:0;font-size:9.4pt">Un même secret Cloudinary détecté à la fois par
+      Gitleaks et Trivy devient un seul élément suivi, et non deux tickets concurrents.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Cycle de vie</div>
+      <p style="margin:0;font-size:9.4pt">Un finding possède un état : actif, faux positif,
+      risque accepté, corrigé. Cet état <strong>persiste entre les exécutions</strong> — c'est
+      la mémoire du système.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">API pilotable</div>
+      <p style="margin:0;font-size:9.4pt">L'API REST permet à l'agent IA de lire, enrichir
+      et réécrire les findings sans intervention humaine.</p>
+    </div>
+  </div>
+
+  <h3>6.2 — L'import depuis le pipeline</h3>
+  <pre><span class="k">upload</span>() {
+  scan_type=<span class="v">"$1"</span>; file=<span class="v">"$2"</span>; title=<span class="v">"${3:-$1}"</span>
+  [ -f <span class="v">"$file"</span> ] || { <span class="k">echo</span> <span class="s">"$file absent, skip"</span>; <span class="k">return</span> 0; }
+  curl -sS -X POST <span class="s">"$DD_URL/api/v2/import-scan/"</span> \
+    -H <span class="s">"Authorization: Token $DD_API_TOKEN"</span> \
+    -F <span class="s">"scan_type=$scan_type"</span> -F <span class="s">"file=@$file"</span> -F <span class="s">"test_title=$title"</span> \
+    -F <span class="s">"product_name=flint_commerce"</span> -F <span class="s">"engagement_name=CI/CD Pipeline"</span> \
+    -F <span class="s">"auto_create_context=true"</span> -F <span class="s">"active=true"</span> -F <span class="s">"verified=false"</span>
+}</pre>
+
+  <table class="t sm">
+    <thead><tr><th>Paramètre</th><th>Valeur</th><th>Pourquoi</th></tr></thead>
+    <tbody>
+      <tr><td><code>scan_type</code></td><td>Nom exact du parseur</td><td>DefectDojo rejette toute chaîne inconnue — les libellés doivent être exacts (<em>Trivy Scan</em>, <em>Gitleaks Scan</em>, <em>Semgrep JSON Report</em>…)</td></tr>
+      <tr><td><code>test_title</code></td><td>Libellé distinctif</td><td>Sépare les trois imports Trivy qui partagent le même <code>scan_type</code></td></tr>
+      <tr><td><code>auto_create_context</code></td><td><code>true</code></td><td>Crée produit et engagement à la volée — pipeline autonome</td></tr>
+      <tr><td><code>verified</code></td><td><code>false</code></td><td>Rien n'est réputé vérifié avant le passage du triage</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — les noms de parseurs</div>
+    <p style="margin:0">DefectDojo attend des libellés <strong>exacts</strong> et ne propose
+    aucune correspondance approchée. Un <code>scan_type</code> erroné provoque un rejet
+    silencieux : le job réussit, mais rien n'apparaît dans l'interface. Chaque nom a dû être
+    vérifié dans la documentation officielle des parseurs.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                    7. LA COUCHE IA  (cœur)                        -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">7</span>La couche d'intelligence artificielle</h2>
+  <p class="lead">C'est la contribution originale du projet. Le fichier
+  <code>triage_agent.py</code> transforme un flux brut de findings en une liste de priorités
+  fondée sur l'<strong>exploitabilité réelle</strong>, accompagnée de recommandations de
+  remédiation.</p>
+
+  <h3>7.1 — Le raisonnement</h3>
+  <p>La sévérité CVSS répond à la question « <em>quelle serait la gravité si cette faille
+  était exploitée ?</em> ». Elle ne répond jamais à « <em>cette faille est-elle réellement
+  exploitée ?</em> ». Deux sources publiques répondent à cette seconde question :</p>
+
+  <div class="grid2">
+    <div class="card" style="border-left:3px solid var(--violet)">
+      <div class="card-t">EPSS — <em>Exploit Prediction Scoring System</em></div>
+      <p style="margin:0;font-size:9.4pt">Publié par le FIRST. Donne, pour chaque CVE, la
+      <strong>probabilité qu'elle soit exploitée dans les 30 jours</strong>. Un score de
+      0,94 signifie 94 % de probabilité — une information opérationnelle, absente du
+      CVSS.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--violet)">
+      <div class="card-t">CISA KEV — <em>Known Exploited Vulnerabilities</em></div>
+      <p style="margin:0;font-size:9.4pt">Catalogue officiel des vulnérabilités
+      <strong>dont l'exploitation est avérée</strong>. Y figurer n'est pas une prédiction
+      mais un fait constaté, avec indication d'usage par des rançongiciels.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="box-t">Le principe directeur</div>
+    <p style="margin:0">Une CVE <strong>présente au catalogue KEV</strong> ou dont
+    l'<strong>EPSS dépasse 0,5</strong> devient automatiquement <strong>P1</strong>, quelle
+    que soit sa note CVSS. Inversement, une « Critique » sans exploit connu et sans
+    probabilité d'exploitation redescend naturellement dans la file.</p>
+  </div>
+
+  <h3>7.2 — Architecture de l'agent</h3>
+
+  <svg viewBox="0 0 700 330" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Architecture de l'agent de triage">
+    <defs>
+      <marker id="ar3" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto">
+        <path d="M0,0 L6.5,3 L0,6 z" fill="#7C3AED"/>
+      </marker>
+    </defs>
+    <g font-family="Segoe UI,Arial" font-size="9.5">
+      <rect x="6" y="10" width="150" height="40" rx="7" fill="#F3E8FF" stroke="#C084FC"/>
+      <text x="81" y="27" text-anchor="middle" font-weight="700" fill="#581C87">DefectDojo</text>
+      <text x="81" y="41" text-anchor="middle" font-size="8.5" fill="#6B21A8">findings actifs (paginés)</text>
+
+      <path d="M156,30 L188,30" stroke="#7C3AED" stroke-width="1.6" marker-end="url(#ar3)"/>
+
+      <rect x="192" y="10" width="150" height="40" rx="7" fill="#EDE9FE" stroke="#A78BFA"/>
+      <text x="267" y="27" text-anchor="middle" font-weight="700" fill="#4C1D95">dedupe_mark()</text>
+      <text x="267" y="41" text-anchor="middle" font-size="8.5" fill="#5B21B6">signale, ne supprime pas</text>
+
+      <path d="M342,30 L374,30" stroke="#7C3AED" stroke-width="1.6" marker-end="url(#ar3)"/>
+
+      <rect x="378" y="10" width="150" height="40" rx="7" fill="#EDE9FE" stroke="#A78BFA"/>
+      <text x="453" y="27" text-anchor="middle" font-weight="700" fill="#4C1D95">extract_cves()</text>
+      <text x="453" y="41" text-anchor="middle" font-size="8.5" fill="#5B21B6">CVE + GHSA, champ &amp; regex</text>
+
+      <path d="M453,50 L453,70" stroke="#7C3AED" stroke-width="1.6" marker-end="url(#ar3)"/>
+
+      <rect x="330" y="74" width="246" height="46" rx="7" fill="#FAF5FF" stroke="#D8B4FE"/>
+      <text x="453" y="92" text-anchor="middle" font-weight="700" fill="#581C87">Enrichissement</text>
+      <text x="453" y="107" text-anchor="middle" font-size="8.5" fill="#6B21A8">EPSS par lots de 80 · KEV en cache disque 24 h</text>
+
+      <path d="M330,97 L300,97 L300,140" stroke="#7C3AED" stroke-width="1.6" fill="none" marker-end="url(#ar3)"/>
+
+      <!-- aiguillage -->
+      <polygon points="300,144 400,180 300,216 200,180" fill="#FEF3C7" stroke="#FBBF24" stroke-width="1.4"/>
+      <text x="300" y="176" text-anchor="middle" font-weight="700" font-size="9.5" fill="#78350F">Le finding</text>
+      <text x="300" y="190" text-anchor="middle" font-weight="700" font-size="9.5" fill="#78350F">porte-t-il une CVE ?</text>
+
+      <path d="M200,180 L120,180 L120,224" stroke="#7C3AED" stroke-width="1.6" fill="none" marker-end="url(#ar3)"/>
+      <text x="150" y="174" font-size="8.5" font-weight="700" fill="#166534">NON</text>
+      <path d="M400,180 L490,180 L490,224" stroke="#7C3AED" stroke-width="1.6" fill="none" marker-end="url(#ar3)"/>
+      <text x="432" y="174" font-size="8.5" font-weight="700" fill="#991B1B">OUI</text>
+
+      <rect x="26" y="228" width="188" height="50" rx="7" fill="#EDE9FE" stroke="#A78BFA"/>
+      <text x="120" y="246" text-anchor="middle" font-weight="700" fill="#4C1D95">Jugement LLM</text>
+      <text x="120" y="260" text-anchor="middle" font-size="8.3" fill="#5B21B6">qwen2.5:7b · format json</text>
+      <text x="120" y="272" text-anchor="middle" font-size="8.3" fill="#5B21B6">temperature 0 · 2 tentatives</text>
+
+      <rect x="396" y="228" width="188" height="50" rx="7" fill="#DBEAFE" stroke="#93C5FD"/>
+      <text x="490" y="246" text-anchor="middle" font-weight="700" fill="#1E3A8A">Scoring déterministe</text>
+      <text x="490" y="260" text-anchor="middle" font-size="8.3" fill="#1D4ED8">EPSS / KEV / sévérité</text>
+      <text x="490" y="272" text-anchor="middle" font-size="8.3" fill="#1D4ED8">rapide et reproductible</text>
+
+      <path d="M120,278 L120,296 L300,296" stroke="#7C3AED" stroke-width="1.6" fill="none"/>
+      <path d="M490,278 L490,296 L300,296" stroke="#7C3AED" stroke-width="1.6" fill="none"/>
+      <path d="M300,296 L300,306" stroke="#7C3AED" stroke-width="1.6" marker-end="url(#ar3)"/>
+
+      <rect x="150" y="308" width="300" height="20" rx="6" fill="#DCFCE7" stroke="#86EFAC"/>
+      <text x="300" y="322" text-anchor="middle" font-weight="700" font-size="9.5" fill="#14532D">Garde-fous → réécriture DefectDojo → rapport</text>
+    </g>
+  </svg>
+  <p class="cap">Figure 4 — Chaîne de traitement de l'agent de triage</p>
+
+  <h3>7.3 — Le triage hybride : la décision structurante</h3>
+  <p>Tous les findings ne passent pas par le modèle de langage. L'aiguillage repose sur une
+  observation simple :</p>
+
+  <table class="t">
+    <thead><tr><th>Type de finding</th><th>Traitement</th><th>Justification</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Avec CVE/GHSA</strong><br><span style="font-size:8.5pt;color:#6B7280">dépendances</span></td>
+        <td><span class="pill p-cy">Déterministe</span></td>
+        <td>Les données objectives (EPSS, KEV, sévérité) suffisent. Faire intervenir un LLM
+        n'ajoute aucune information et introduit du non-déterminisme.</td>
+      </tr>
+      <tr>
+        <td><strong>Sans CVE</strong><br><span style="font-size:8.5pt;color:#6B7280">secrets, SAST, IaC, Dockerfile</span></td>
+        <td><span class="pill p-vi">LLM</span></td>
+        <td>C'est là que le jugement contextuel a de la valeur : distinguer un secret réel
+        d'un espace réservé exige de comprendre le contenu.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <div class="box-t">Pourquoi c'est le bon choix</div>
+    <p style="margin:0">Cette répartition divise le temps de traitement par un facteur
+    important — sur processeur uniquement, chaque appel au modèle coûte plusieurs secondes —
+    tout en <strong>concentrant l'IA là où elle apporte réellement quelque chose</strong>.
+    C'est l'inverse de l'approche naïve « tout passer au LLM », plus lente et moins fiable.</p>
+  </div>
+
+  <h3>7.4 — Le prompt système</h3>
+  <p>Le modèle est contraint par un schéma JSON strict et un jeu de règles ordonnées. Les
+  paramètres d'inférence — <code>format: json</code>, <code>temperature: 0</code> — visent la
+  reproductibilité.</p>
+
+  <pre>{
+  <span class="k">"is_false_positive"</span>: &lt;true|false&gt;,
+  <span class="k">"fp_reason"</span>:         <span class="s">"&lt;raison courte&gt;"</span>,
+  <span class="k">"risk_priority"</span>:     <span class="s">"&lt;P1|P2|P3|P4&gt;"</span>,
+  <span class="k">"priority_score"</span>:    &lt;entier 0-100&gt;,
+  <span class="k">"remediation"</span>:       <span class="s">"&lt;une action concrète&gt;"</span>
+}
+
+<span class="c">RÈGLES (appliquées dans l'ordre) :</span>
+<span class="c">1. Espaces réservés (FAKE, EXAMPLE, PLACEHOLDER, CHANGEME) → faux positif, P4</span>
+<span class="c">2. kev=true OU epss ≥ 0.5                            → P1, score ≥ 85</span>
+<span class="c">3. Sinon : score selon sévérité + exploitabilité</span>
+<span class="c">4. remediation : une action spécifique et actionnable</span></pre>
+
+  <h3>7.5 — Les garde-fous : la partie la plus importante</h3>
+  <p>Un modèle de 7 milliards de paramètres tournant sur processeur commet des erreurs.
+  L'ingénierie du projet consiste à <strong>encadrer ces erreurs</strong> pour qu'aucune ne
+  puisse masquer une vulnérabilité réelle.</p>
+
+  <div class="crit">
+    <div class="box-t">Incident réel — et son enseignement</div>
+    <p style="margin:0 0 5px">Lors d'une exécution, l'agent a classé en faux positifs
+    <strong>deux CVE authentiques</strong>, puis <strong>treize avis GHSA</strong> concernant
+    Nodemailer. Analyse des causes :</p>
+    <ul style="margin:0 0 5px 16px;font-size:9.4pt">
+      <li>Les identifiants figuraient dans le <em>titre</em> du finding, pas dans le champ
+      structuré <code>vulnerability_ids</code> — l'agent croyait traiter un finding sans CVE
+      et l'envoyait au LLM.</li>
+      <li>Les avis GHSA ont été mal classés au moment où Ollama était injoignable : le repli
+      déterministe, alors trop grossier, avait déclenché sur le mot « example » présent dans
+      le texte de l'avis.</li>
+    </ul>
+    <p style="margin:0"><strong>Ces faux négatifs sont le résultat le plus instructif du
+    projet</strong> : ils démontrent expérimentalement qu'un LLM ne peut pas être l'autorité
+    finale d'une décision de sécurité, et justifient l'architecture de garde-fous qui suit.</p>
+  </div>
+
+  <h4>Garde-fou 1 — Un identifiant de vulnérabilité n'est jamais un faux positif</h4>
+  <pre><span class="c"># Empêche le LLM 7B de masquer une vraie CVE</span>
+<span class="k">if</span> f.get(<span class="s">"cves"</span>) <span class="k">and</span> f[<span class="s">"verdict"</span>][<span class="s">"is_false_positive"</span>]:
+    f[<span class="s">"verdict"</span>][<span class="s">"is_false_positive"</span>] = <span class="r">False</span>
+    f[<span class="s">"verdict"</span>][<span class="s">"reason"</span>] = <span class="s">""</span></pre>
+
+  <h4>Garde-fou 2 — Extraction élargie des identifiants</h4>
+  <p>La cause racine a été traitée : l'extraction lit désormais le champ structuré
+  <strong>et</strong> applique une expression régulière au titre et à la description,
+  couvrant CVE et GHSA.</p>
+  <pre>pat = <span class="s">r"(?:CVE-\d{4}-\d{4,7}|GHSA-[0-9A-Za-z]{4}-[0-9A-Za-z]{4}-[0-9A-Za-z]{4})"</span></pre>
+
+  <h4>Garde-fou 3 — Pré-filtre déterministe des espaces réservés</h4>
+  <p>Un secret factice doit être classé de façon <strong>identique à chaque exécution</strong>,
+  indépendamment du non-déterminisme du modèle. Le filtre est volontairement
+  <strong>étroit</strong> : il exige à la fois un indice « secret » dans le titre
+  <em>et</em> un marqueur d'espace réservé — c'est précisément ce qui évite de rejouer
+  l'incident Nodemailer.</p>
+
+  <h4>Garde-fou 4 — Une vulnérabilité KEV n'est jamais désactivée</h4>
+  <pre><span class="c"># Même si le verdict dit « faux positif », une CVE exploitée reste active</span>
+mark_fp = bool(v[<span class="s">"is_false_positive"</span>]) <span class="k">and not</span> f.get(<span class="s">"kev"</span>)</pre>
+
+  <h3>7.6 — Réécriture idempotente vers DefectDojo</h3>
+  <p>L'agent réécrit ses conclusions par <code>PATCH</code> partiel — jamais par
+  <code>PUT</code>, qui écraserait les champs non transmis.</p>
+
+  <pre>patch = {<span class="s">"tags"</span>: new_tags,
+         <span class="s">"false_p"</span>:  mark_fp,
+         <span class="s">"active"</span>:   (<span class="k">not</span> mark_fp),   <span class="c"># un re-run RÉACTIVE un finding mal désactivé</span>
+         <span class="s">"verified"</span>: (<span class="k">not</span> mark_fp)}  <span class="c"># un FP ne peut pas être « vérifié »</span></pre>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — l'échec silencieux</div>
+    <p style="margin:0">Le champ <code>false_p</code> ne persistait pas et le tableau de bord
+    Grafana affichait obstinément zéro faux positif. La cause n'est apparue qu'en exécutant
+    le <code>PATCH</code> à la main : DefectDojo refusait la requête avec
+    « <em>False positive findings cannot be verified</em> ». Le code avalait alors les
+    erreurs 4xx sans les signaler. Double correctif : poser <code>verified = not mark_fp</code>,
+    et <strong>remonter systématiquement les erreurs d'API</strong> au lieu de les ignorer.</p>
+  </div>
+
+  <h4>Traçabilité — la note d'audit</h4>
+  <p>Chaque décision est consignée dans une note attachée au finding, préfixée par un
+  marqueur <code>[AI-TRIAGE]</code> qui garantit l'idempotence : l'agent ne republie pas de
+  note si elle existe déjà. Chaque verdict est donc <strong>auditable</strong>, avec sa
+  source (<code>llm</code>, <code>deterministic</code> ou <code>fallback</code>), condition
+  indispensable à l'acceptabilité d'une décision automatisée.</p>
+
+  <pre class="term">[AI-TRIAGE]
+Verdict     : CONFIRMÉ
+Priorité    : P1  (score 95/100)
+CVE         : CVE-2024-XXXXX  EPSS=94.2%  KEV=OUI (exploité)
+Remédiation : Mettre à jour le composant vers la version corrigée
+Source      : deterministic
+-- qwen2.5:7b @ 2026-07-22 14:03:11</pre>
+
+  <h3>7.7 — Robustesse d'exécution</h3>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-t">Zéro dépendance externe</div>
+      <p style="margin:0;font-size:9.4pt">Écrit intégralement avec la bibliothèque standard
+      (<code>urllib</code>). Contourne la contrainte PEP 668 d'Ubuntu 24.04 et supprime toute
+      dépendance à installer — l'agent tourne dans une image
+      <code>python:3.12-alpine</code> nue.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Contrôles préalables</div>
+      <p style="margin:0;font-size:9.4pt"><code>preflight()</code> valide le jeton DefectDojo
+      et la présence du modèle <strong>avant</strong> la boucle : on échoue en deux secondes
+      plutôt qu'après vingt minutes de traitement.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Dégradation progressive</div>
+      <p style="margin:0;font-size:9.4pt">KEV indisponible, EPSS en échec ou Ollama
+      injoignable : l'agent continue avec un repli déterministe. Il ne s'interrompt
+      jamais.</p>
+    </div>
+    <div class="card">
+      <div class="card-t">Lecture seule par défaut</div>
+      <p style="margin:0;font-size:9.4pt">Le mode <code>--dry-run</code> est le défaut ;
+      la réécriture exige un <code>--write</code> explicite. Aucune modification accidentelle
+      du référentiel.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                       8. LA GATE                                  -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">8</span>La gate de sécurité</h2>
+  <p class="lead">Dernière étape du pipeline, et la seule qui <strong>bloque réellement</strong> :
+  <code>gate_critical</code> ne porte pas <code>allow_failure</code>.</p>
+
+  <h3>8.1 — Le critère de blocage</h3>
+  <p><code>gate.py</code> interroge DefectDojo et compte les findings qui satisfont
+  <strong>simultanément</strong> quatre conditions :</p>
+
+  <table class="t">
+    <thead><tr><th>Condition</th><th>Signification</th></tr></thead>
+    <tbody>
+      <tr><td><code>active = true</code></td><td>Le finding n'a pas été corrigé</td></tr>
+      <tr><td><code>false_p = false</code></td><td>Le triage ne l'a pas classé faux positif</td></tr>
+      <tr><td><code>risk_accepted = false</code></td><td>Aucune acceptation formelle du risque</td></tr>
+      <tr><td>étiquette <code>ai-p1</code></td><td>L'agent l'a jugé de priorité maximale</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <div class="box-t">La différence avec une gate classique</div>
+    <p style="margin:0">Une gate ordinaire bloque sur « <em>au moins une vulnérabilité
+    Critique</em> » — un critère qui produit tellement de faux blocages que les équipes
+    finissent par la désactiver. Ici le blocage porte sur la <strong>priorité calculée</strong>
+    (sévérité + EPSS + KEV + filtrage des faux positifs). Un espace réservé
+    <code>sk_test_…FAKE</code> ne bloque donc <em>jamais</em> la livraison, tandis qu'une
+    vulnérabilité moyenne activement exploitée la bloque.</p>
+  </div>
+
+  <h3>8.2 — Choix d'implémentation</h3>
+  <p>Le filtrage sur l'étiquette est réalisé <strong>côté client</strong>, après récupération,
+  plutôt que par un paramètre d'URL. La syntaxe de filtrage sur les étiquettes varie selon
+  les versions de DefectDojo (schéma <em>tagulous</em>) ; un filtre serveur mal interprété
+  renverrait silencieusement une liste vide — c'est-à-dire une <strong>gate qui laisse tout
+  passer</strong>. Le filtrage local est plus lent mais ne peut pas échouer en silence.</p>
+
+  <pre>blockers = []
+<span class="k">for</span> f <span class="k">in</span> data.get(<span class="s">"results"</span>, []):
+    <span class="k">if</span> GATE_TAG <span class="k">in</span> (f.get(<span class="s">"tags"</span>) <span class="k">or</span> []):   <span class="c"># filtrage côté client : jamais silencieux</span>
+        blockers.append(f)</pre>
+
+  <p>Le seuil est paramétrable par <code>GATE_MAX</code> (défaut <code>0</code> : aucune P1
+  tolérée). Deux voies de déblocage existent — corriger la vulnérabilité, ou l'accepter
+  formellement dans DefectDojo. Cette seconde voie est essentielle : elle donne à la gate un
+  <strong>circuit de gouvernance</strong> plutôt qu'un simple interrupteur, et évite la
+  tentation de désactiver le contrôle.</p>
+
+  <pre class="term">🚦 Gate sécurité — produit 'flint_commerce', tag bloquant 'ai-p1', seuil=0
+   6 finding(s) ai-p1 actif(s) / non-FP / non-risk-accepted :
+     • [High    ] Vulnérabilité critique dans une dépendance transitive
+     • [Critical] Secret d'API confirmé dans l'historique Git
+     ...
+❌ GATE ÉCHOUÉE : 6 priorité(s) P1 non traitée(s) (seuil autorisé = 0).
+   → Corriger la vulnérabilité, ou la marquer 'Risk Accepted' dans DefectDojo.</pre>
+</div>
+
+<!-- ================================================================= -->
+<!--                  9. CHAÎNE D'APPROVISIONNEMENT                    -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">9</span>Chaîne d'approvisionnement logicielle</h2>
+  <p class="lead">Depuis les compromissions de type SolarWinds, la sécurité de la chaîne
+  d'approvisionnement est devenue une exigence à part entière — elle constitue une catégorie
+  dédiée de l'OWASP Top 10:2025. Deux mécanismes y répondent : la nomenclature et la
+  signature.</p>
+
+  <h3>9.1 — SBOM : l'inventaire</h3>
+  <p>Syft produit une nomenclature <strong>CycloneDX</strong> pour chaque image : la liste
+  exhaustive des composants réellement embarqués, avec versions et licences.</p>
+
+  <div class="note">
+    <div class="box-t">L'utilité concrète</div>
+    <p style="margin:0">À la publication d'une faille majeure dans une bibliothèque très
+    répandue, la question opérationnelle est : « <em>sommes-nous concernés, et où ?</em> ».
+    Sans SBOM, la réponse demande des jours d'audit. Avec un SBOM archivé par version, elle
+    tient en une requête. C'est aussi la raison pour laquelle les SBOM sont conservés
+    <strong>30 jours</strong> en artefacts.</p>
+  </div>
+
+  <h3>9.2 — Signature : la provenance</h3>
+  <p>Cosign signe les images avec une clé privée conservée dans les variables protégées de
+  GitLab et chiffrée par <code>COSIGN_PASSWORD</code>.</p>
+
+  <pre>cosign sign --key <span class="v">"$COSIGN_PRIVATE_KEY"</span> --tlog-upload=<span class="k">false</span> <span class="v">"$IMAGE_SERVER"</span></pre>
+
+  <div class="note">
+    <div class="box-t">Décision — signer par digest, pas par étiquette</div>
+    <p style="margin:0">L'étape de construction exporte le digest
+    (<code>sha256:…</code>) via un artefact <em>dotenv</em>, et c'est ce digest qui est signé.
+    Une étiquette est mutable : signer <code>flint-server:abc123</code> ne garantit rien, car
+    l'étiquette peut être réattribuée à une autre image. Le digest est l'empreinte
+    cryptographique du contenu — il est immuable par construction.</p>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — version de Cosign</div>
+    <p style="margin:0">Le paquet Alpine installait Cosign 3.0.6, où
+    <code>--tlog-upload=false</code> n'est plus accepté. Or le journal de transparence public
+    Rekor n'est pas souhaitable ici : il rendrait publiques les empreintes d'un projet privé.
+    Correctif : télécharger le binaire <code>cosign-linux-arm64</code> <strong>v2.4.3</strong>
+    épinglé, plutôt que de dépendre de la version du dépôt.</p>
+  </div>
+
+  <div class="crit">
+    <div class="box-t">Limite majeure assumée — la signature n'est pas vérifiée au déploiement</div>
+    <p style="margin:0 0 5px">Dans l'état actuel, <code>cosign verify</code> s'exécute
+    <strong>dans le même job</strong> que <code>cosign sign</code>. La chaîne vérifie donc sa
+    propre signature : c'est un contrôle circulaire, qui prouve que la clé fonctionne mais
+    <strong>n'apporte aucune garantie au moment du déploiement</strong>.</p>
+    <p style="margin:0">Le cluster k3s accepte aujourd'hui n'importe quelle image. La preuve
+    cryptographique est produite, mais personne ne la contrôle. Le traitement de cette
+    limite est décrit en <strong>section 13</strong>.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                    10. DÉPLOIEMENT GITOPS                         -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">10</span>Déploiement GitOps</h2>
+  <p class="lead">Le déploiement n'est pas réalisé par le pipeline. Argo CD observe un dépôt
+  Git et fait converger le cluster vers l'état qui y est décrit.</p>
+
+  <h3>10.1 — Pourquoi GitOps plutôt qu'un <code>kubectl apply</code> en CI</h3>
+  <div class="grid2">
+    <div class="card" style="border-left:3px solid var(--red)">
+      <div class="card-t">Déploiement piloté par la CI</div>
+      <ul style="margin:0 0 0 15px;font-size:9.3pt">
+        <li>La CI détient des identifiants d'administration du cluster</li>
+        <li>Un pipeline compromis = un cluster compromis</li>
+        <li>Aucune détection de la dérive de configuration</li>
+        <li>Retour arrière manuel</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--green)">
+      <div class="card-t">GitOps (Argo CD)</div>
+      <ul style="margin:0 0 0 15px;font-size:9.3pt">
+        <li><strong>La CI n'a aucun accès au cluster</strong></li>
+        <li>Argo CD tire depuis Git — flux entrant uniquement</li>
+        <li>Dérive détectée et corrigée automatiquement</li>
+        <li>Retour arrière = <code>git revert</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="box-t">Le gain de sécurité</div>
+    <p style="margin:0">C'est une application directe du <strong>moindre privilège</strong>.
+    Dans le modèle GitOps, le pipeline ne possède aucun droit sur le cluster : il ne fait que
+    publier une image et modifier un fichier. Même totalement compromis, il ne peut pas
+    exécuter de charge arbitraire dans le cluster. Argo CD dispose d'un accès en
+    <strong>lecture seule</strong> au dépôt via un jeton de déploiement dédié.</p>
+  </div>
+
+  <h3>10.2 — Durcissement des charges de travail</h3>
+  <p>Les manifestes appliquent systématiquement les recommandations
+  <em>Pod Security Standards</em> :</p>
+
+  <table class="t sm">
+    <thead><tr><th>Contrôle</th><th>Valeur</th><th>Menace neutralisée</th></tr></thead>
+    <tbody>
+      <tr><td><code>runAsNonRoot</code></td><td><code>true</code> (UID 1000 / 101 / 999)</td><td>Évasion de conteneur vers l'hôte en root</td></tr>
+      <tr><td><code>readOnlyRootFilesystem</code></td><td><code>true</code> sur le serveur</td><td>Dépôt de charge malveillante persistante</td></tr>
+      <tr><td><code>capabilities.drop</code></td><td><code>["ALL"]</code></td><td>Abus de capacités Linux privilégiées</td></tr>
+      <tr><td><code>allowPrivilegeEscalation</code></td><td><code>false</code></td><td>Élévation via binaires setuid</td></tr>
+      <tr><td><code>seccompProfile</code></td><td><code>RuntimeDefault</code></td><td>Réduction de la surface d'appels système</td></tr>
+      <tr><td><code>resources.limits</code></td><td>CPU et mémoire bornés</td><td>Déni de service par épuisement</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <div class="box-t">Détail d'implémentation</div>
+    <p style="margin:0">Le système de fichiers racine en lecture seule impose de monter un
+    volume <code>emptyDir</code> sur <code>/tmp</code>, seul répertoire où l'application écrit.
+    Côté client, l'image <code>nginx-unprivileged</code> écoute sur le port
+    <strong>8080</strong> : un processus non privilégié ne peut pas se lier à un port
+    inférieur à 1024.</p>
+  </div>
+
+  <h3>10.3 — Les composants déployés</h3>
+  <table class="t sm">
+    <thead><tr><th>Ressource</th><th>Configuration</th><th>Exposition</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Namespace <code>flint</code></strong></td><td>Isolation logique</td><td>—</td></tr>
+      <tr><td><strong>MongoDB 7</strong></td><td>PVC 2 Gi, stratégie <code>Recreate</code></td><td>Service interne uniquement</td></tr>
+      <tr><td><strong>flint-server</strong></td><td>UID 1000, racine en lecture seule, sonde TCP</td><td>NodePort 30050 (cible DAST)</td></tr>
+      <tr><td><strong>flint-client</strong></td><td>UID 101, sonde HTTP <code>/healthz</code></td><td>Service interne</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================= -->
+<!--                 11. OBSERVABILITÉ ET ALERTING                     -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">11</span>Observabilité et alerting</h2>
+  <p class="lead">Un dispositif de sécurité qu'on ne mesure pas ne se pilote pas. Deux
+  canaux complémentaires : Grafana pour la tendance, Slack pour l'urgence.</p>
+
+  <h3>11.1 — Grafana : les tableaux de bord</h3>
+  <p>Grafana se connecte <strong>directement à la base PostgreSQL de DefectDojo</strong>, en
+  lecture seule via un rôle dédié <code>grafana_ro</code> — application du moindre privilège :
+  un tableau de bord n'a aucune raison de pouvoir écrire dans le référentiel.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-t">Indicateurs de posture</div>
+      <ul style="margin:0 0 0 15px;font-size:9.3pt">
+        <li>Findings actifs par sévérité</li>
+        <li>Répartition des priorités P1–P4 issues du triage</li>
+        <li>Nombre de faux positifs filtrés automatiquement</li>
+        <li>Vulnérabilités présentes au catalogue KEV</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-t">Indicateurs de tendance</div>
+      <ul style="margin:0 0 0 15px;font-size:9.3pt">
+        <li>Évolution du volume dans le temps</li>
+        <li>Délai moyen de correction</li>
+        <li>Taux de blocage de la gate</li>
+        <li>Rapprochement avec les métriques DORA</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">Difficulté — « Data is missing a time field »</div>
+    <p style="margin:0">Les panneaux d'agrégation renvoyaient cette erreur. Cause : le format
+    de requête était réglé sur <em>Time series</em>, qui exige une colonne temporelle. Une
+    requête de comptage par sévérité n'en produit aucune. Correctif : passer le format à
+    <strong>Table</strong> sur tous les panneaux sauf celui d'évolution temporelle.</p>
+  </div>
+
+  <h3>11.2 — Slack : l'alerting</h3>
+  <p>À la fin de chaque triage, l'agent publie une synthèse via un <em>webhook</em> entrant,
+  au format Block Kit : compteurs globaux, répartition des priorités, et les cinq urgences
+  P1/P2 les plus élevées.</p>
+
+  <div class="note">
+    <div class="box-t">Décision — l'alerting ne peut jamais faire échouer le triage</div>
+    <p style="margin:0">La fonction <code>notify_slack()</code> intercepte toutes ses
+    exceptions. Si le webhook est absent ou en erreur, un message d'avertissement est
+    affiché et le traitement se poursuit. Une défaillance du canal de notification ne doit
+    jamais invalider un travail d'analyse déjà accompli.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                        12. RÉSULTATS                              -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">12</span>Résultats</h2>
+
+  <h3>12.1 — Ce que le framework produit</h3>
+  <div class="grid4">
+    <div class="stat"><div class="n">10</div><div class="l">étapes de pipeline</div></div>
+    <div class="stat"><div class="n">8</div><div class="l">rapports agrégés</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">sources de renseignement</div></div>
+    <div class="stat"><div class="n">4</div><div class="l">garde-fous IA</div></div>
+  </div>
+
+  <h3>12.2 — Effet du triage</h3>
+  <p>Sur une exécution complète, la chaîne de scanners produit plusieurs centaines de
+  findings actifs. Le passage de l'agent réorganise cette masse :</p>
+
+  <table class="t">
+    <thead><tr><th>Transformation</th><th>Mécanisme</th><th>Bénéfice opérationnel</th></tr></thead>
+    <tbody>
+      <tr><td>Faux positifs écartés</td><td>Pré-filtre déterministe + jugement LLM</td><td>Les espaces réservés ne bloquent plus la livraison</td></tr>
+      <tr><td>Doublons signalés</td><td><code>dedupe_mark()</code> par titre et chemin</td><td>Un seul élément suivi par vulnérabilité réelle</td></tr>
+      <tr><td>Priorités recalculées</td><td>EPSS + KEV plutôt que CVSS brut</td><td>L'ordre de traitement reflète le risque réel</td></tr>
+      <tr><td>Remédiation proposée</td><td>Génération contextuelle par le LLM</td><td>Le développeur sait quoi faire, pas seulement quoi craindre</td></tr>
+      <tr><td>Décisions tracées</td><td>Note <code>[AI-TRIAGE]</code> par finding</td><td>Chaque verdict automatisé reste auditable</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ok">
+    <div class="box-t">Résultat structurant</div>
+    <p style="margin:0">La gate ne se déclenche plus sur du bruit. Elle bloque sur un nombre
+    réduit de priorités <strong>réellement exploitables</strong> — ce qui la rend
+    <em>crédible</em>, donc utilisable au quotidien plutôt que désactivée à la première
+    urgence.</p>
+  </div>
+
+  <h3>12.3 — Conformité aux référentiels</h3>
+  <table class="t sm">
+    <thead><tr><th>Référentiel</th><th>Élément couvert</th><th>Par quel composant</th></tr></thead>
+    <tbody>
+      <tr><td>OWASP Top 10:2025</td><td>A02 — Mauvaise configuration</td><td>Checkov, Hadolint, durcissement des pods</td></tr>
+      <tr><td>OWASP Top 10:2025</td><td>Chaîne d'approvisionnement</td><td>Syft (SBOM) + Cosign (signature)</td></tr>
+      <tr><td>OWASP Top 10:2025</td><td>Composants vulnérables</td><td>Trivy fs et Trivy image</td></tr>
+      <tr><td>OWASP DSOMM</td><td>Niveau 2–3 — Construction et déploiement</td><td>Pipeline automatisé, SBOM, gates</td></tr>
+      <tr><td>SLSA</td><td>Niveau 1–2 — Provenance</td><td>Construction scriptée, signature par digest</td></tr>
+      <tr><td>NIST SSDF</td><td>PW.7 / PW.8 — Revue et test du code</td><td>Semgrep, Trivy, DAST prévu</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ================================================================= -->
+<!--                 13. LIMITES ET PERSPECTIVES                       -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">13</span>Limites et perspectives</h2>
+  <p class="lead">Cette section recense sans complaisance les faiblesses connues du
+  dispositif. Un travail d'ingénierie se juge autant à la lucidité de son analyse critique
+  qu'à ses réalisations.</p>
+
+  <h3>13.1 — Limites identifiées</h3>
+
+  <div class="crit">
+    <div class="box-t">L1 — La signature n'est pas contrôlée au déploiement</div>
+    <p style="margin:0 0 4px"><strong>Constat.</strong> Les images sont signées, mais aucun
+    contrôle n'intervient au moment de l'admission dans le cluster. Un
+    <code>kubectl apply</code> direct référençant une image arbitraire est accepté. La gate
+    du pipeline est contournable puisqu'il ne s'agit que d'un job de CI.</p>
+    <p style="margin:0"><strong>Traitement.</strong> Déployer un contrôleur d'admission
+    (<em>Kyverno</em> ou <em>OPA Gatekeeper</em>) portant une règle <code>verifyImages</code>
+    adossée à la clé publique. Le cluster devient alors la frontière de confiance : toute
+    image non signée est <strong>rejetée à l'admission</strong>. C'est l'évolution prioritaire.</p>
+  </div>
+
+  <div class="crit">
+    <div class="box-t">L2 — MongoDB sans authentification et réseau non segmenté</div>
+    <p style="margin:0 0 4px"><strong>Constat.</strong> La base est jointe par
+    <code>mongodb://mongo:27017/flint</code>, sans identifiants, et aucune
+    <code>NetworkPolicy</code> n'est définie. Le réseau du cluster étant plat par défaut,
+    n'importe quel pod compromis atteint directement la base.</p>
+    <p style="margin:0"><strong>Traitement.</strong> Activer l'authentification MongoDB et
+    appliquer une <code>NetworkPolicy</code> en refus par défaut, n'autorisant que le flux
+    <code>flint-server → mongo</code> sur le port 27017.</p>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">L3 — Images référencées par étiquette mutable</div>
+    <p style="margin:0">Les manifestes utilisent <code>flint-server:&lt;SHA&gt;</code>. Le
+    pipeline calcule pourtant le digest immuable : il devrait être propagé jusqu'aux
+    manifestes de déploiement, ce qui rendrait par ailleurs le contrôle de signature
+    exploitable.</p>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">L4 — Performance de l'IA non mesurée</div>
+    <p style="margin:0">Les faux négatifs ont été découverts <em>par observation</em>, non par
+    une campagne de mesure. Il manque un jeu de vérité-terrain annoté permettant de calculer
+    précision, rappel et F1 du triage, et de comparer objectivement la priorisation IA à la
+    priorisation CVSS. C'est l'évolution la plus importante sur le plan méthodologique.</p>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">L5 — Couverture de test incomplète</div>
+    <p style="margin:0">Le DAST (OWASP ZAP contre le service exposé en NodePort 30050) est
+    préparé mais non intégré au pipeline. La sécurité à l'exécution (Falco) n'est pas
+    traitée : le dispositif détecte avant le déploiement, pas pendant l'exécution.</p>
+  </div>
+
+  <div class="warn">
+    <div class="box-t">L6 — Gestion des secrets et infrastructure manuelle</div>
+    <p style="margin:0">Les secrets Kubernetes sont appliqués à la main depuis un manifeste
+    à compléter ; un opérateur de secrets externes couplé à un coffre-fort serait la réponse
+    industrielle. Par ailleurs la VM a été provisionnée manuellement : sa description en
+    Terraform la rendrait reproductible et analysable par Checkov.</p>
+  </div>
+
+  <h3>13.2 — Feuille de route</h3>
+  <table class="t">
+    <thead><tr><th>Priorité</th><th>Évolution</th><th>Gain attendu</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-rd">1</span></td><td>Contrôleur d'admission Kyverno + vérification de signature</td><td>La signature devient une garantie appliquée ; défense en profondeur</td></tr>
+      <tr><td><span class="pill p-rd">2</span></td><td>Campagne de mesure du triage (précision / rappel / F1)</td><td>Validation scientifique de l'apport de l'IA</td></tr>
+      <tr><td><span class="pill p-am">3</span></td><td><code>NetworkPolicy</code> et authentification MongoDB</td><td>Segmentation réseau, principe de confiance zéro</td></tr>
+      <tr><td><span class="pill p-am">4</span></td><td>Intégration du DAST OWASP ZAP</td><td>Couverture des failles visibles seulement à l'exécution</td></tr>
+      <tr><td><span class="pill p-gy">5</span></td><td>Falco pour la détection à l'exécution</td><td>Extension du dispositif au-delà du déploiement</td></tr>
+      <tr><td><span class="pill p-gy">6</span></td><td>Terraform et gestion externalisée des secrets</td><td>Infrastructure reproductible et auditée</td></tr>
+    </tbody>
+  </table>
+
+  <div class="ok">
+    <div class="box-t">Conclusion</div>
+    <p style="margin:0">Le framework atteint son objectif : une chaîne CI/CD couvrant six
+    surfaces d'attaque, agrégée dans un référentiel unique, et une couche d'intelligence
+    artificielle qui substitue à la sévérité théorique une <strong>priorisation fondée sur
+    l'exploitabilité réelle</strong>. Sa contribution la plus solide n'est pas d'avoir
+    branché un modèle de langage sur des scanners — c'est d'avoir démontré, garde-fous à
+    l'appui et incident documenté, <strong>dans quelles limites un tel modèle peut être
+    tenu pour fiable</strong> au sein d'une décision de sécurité.</p>
+  </div>
+</div>
+
+<!-- ================================================================= -->
+<!--                          ANNEXES                                  -->
+<!-- ================================================================= -->
+<div class="section">
+  <h2><span class="num">A</span>Annexes</h2>
+
+  <h3>A.1 — Variables d'environnement</h3>
+  <table class="t sm">
+    <thead><tr><th>Variable</th><th>Consommateur</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>DD_URL</code></td><td>agent, gate</td><td>Adresse de DefectDojo (<code>172.17.0.1:8080</code> depuis un job)</td></tr>
+      <tr><td><code>DD_API_TOKEN</code></td><td>agent, gate</td><td>Jeton d'API — variable GitLab <strong>masquée et protégée</strong></td></tr>
+      <tr><td><code>OLLAMA_URL</code></td><td>agent</td><td>Adresse d'Ollama (<code>172.17.0.1:11434</code>)</td></tr>
+      <tr><td><code>OLLAMA_MODEL</code></td><td>agent</td><td><code>qwen2.5:7b</code></td></tr>
+      <tr><td><code>SLACK_WEBHOOK_URL</code></td><td>agent</td><td>Webhook d'alerting (facultatif)</td></tr>
+      <tr><td><code>GATE_MAX</code></td><td>gate</td><td>Nombre de P1 toléré (défaut <code>0</code>)</td></tr>
+      <tr><td><code>COSIGN_PRIVATE_KEY</code></td><td>signature</td><td>Clé privée, chiffrée par <code>COSIGN_PASSWORD</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>A.2 — Commandes d'exploitation</h3>
+  <pre class="term"><span class="c"># Triage en lecture seule (aucune écriture dans DefectDojo)</span>
+python3 triage_agent.py --dry-run
+
+<span class="c"># Triage complet avec réécriture</span>
+python3 triage_agent.py --write
+
+<span class="c"># Démonstration rapide sur 20 findings</span>
+python3 triage_agent.py --write --limit 20
+
+<span class="c"># Forcer TOUS les findings au LLM (plus lent, pour comparaison)</span>
+python3 triage_agent.py --write --llm-all
+
+<span class="c"># Évaluer la gate manuellement</span>
+DD_API_TOKEN=&lt;jeton&gt; python3 gate.py</pre>
+
+  <pre class="term"><span class="c"># État du cluster</span>
+kubectl get pods -n flint
+kubectl logs -n flint deploy/flint-server --tail=50
+
+<span class="c"># Accès aux interfaces via tunnel SSH</span>
+kubectl port-forward -n flint svc/flint-client 8088:8080
+kubectl port-forward -n argocd svc/argocd-server 8081:443</pre>
+
+  <h3>A.3 — Fichiers du projet</h3>
+  <table class="t sm">
+    <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><code>.gitlab-ci.yml</code></td><td>Définition des 10 étapes du pipeline</td></tr>
+      <tr><td><code>triage_agent.py</code></td><td>Agent de triage IA — cœur du projet</td></tr>
+      <tr><td><code>gate.py</code></td><td>Gate de sécurité fondée sur la priorité calculée</td></tr>
+      <tr><td><code>k8s/flint.yaml</code></td><td>Manifestes Kubernetes durcis</td></tr>
+      <tr><td><code>server/Dockerfile</code></td><td>Image API multi-étapes, exécution non-root</td></tr>
+      <tr><td><code>client/Dockerfile</code></td><td>Build Vite → Nginx non privilégié</td></tr>
+      <tr><td><code>server/.dockerignore</code></td><td>Exclut <code>.env</code> — aucun secret dans l'image</td></tr>
+      <tr><td><code>cosign.pub</code></td><td>Clé publique de vérification des signatures</td></tr>
+      <tr><td><code>architecture_eraser.png</code></td><td>Schéma d'architecture</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note" style="margin-top:6mm">
+    <div class="box-t">Note de sécurité</div>
+    <p style="margin:0">Le fichier <code>server/.dockerignore</code> constitue un contrôle à
+    part entière : il empêche que <code>.env</code> soit copié dans l'image. Sans lui, les
+    secrets applicatifs se retrouveraient dans une couche d'image, extractibles par simple
+    <code>docker save</code> — indépendamment de toute variable d'environnement définie à
+    l'exécution.</p>
+  </div>
+</div>

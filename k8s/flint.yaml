@@ -1,0 +1,225 @@
+# ============ flint_commerce sur k3s (arm64) ============
+# mongo (in-cluster) + server (API Express) + client (nginx static)
+# Remplace <SHA> par $CI_COMMIT_SHORT_SHA (voir `k3s ctr images ls | grep flint`)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flint
+---
+# --- Secret consommé par le serveur via envFrom ---
+# Noms RÉELS lus par le code (vérifiés via grep process.env) :
+#   MONGO_URL, PORT, JWT_SECRET_KEY, HASH_SALT, CLOUDINARY_*, EMAIL_*, STORE_OWNER_EMAIL
+# (PAS de Stripe : non utilisé par le serveur)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: flint-secrets
+  namespace: flint
+type: Opaque
+stringData:
+  MONGO_URL: "mongodb://mongo:27017/flint"
+  PORT: "5000"
+  JWT_SECRET_KEY: "CHANGE_ME_long_random_jwt_secret"
+  HASH_SALT: "10"
+  CLOUDINARY_CLOUD_NAME: "REPLACE_cloud_name"
+  CLOUDINARY_API_KEY: "REPLACE_api_key"
+  CLOUDINARY_API_SECRET: "REPLACE_api_secret"
+  EMAIL_USER: "REPLACE_email@gmail.com"
+  EMAIL_PASS: "REPLACE_app_password"
+  STORE_OWNER_EMAIL: "REPLACE_owner@example.com"
+---
+# --- PVC MongoDB (provisionné par local-path, storageClass par défaut k3s) ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-data
+  namespace: flint
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+---
+# --- MongoDB (mongo:7 multi-arch -> arm64v8) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  namespace: flint
+  labels: { app: mongo }
+spec:
+  replicas: 1
+  strategy: { type: Recreate }      # un seul writer sur un PVC RWO
+  selector:
+    matchLabels: { app: mongo }
+  template:
+    metadata:
+      labels: { app: mongo }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999                 # rend /data/db inscriptible par mongodb
+      containers:
+        - name: mongo
+          image: mongo:7
+          imagePullPolicy: IfNotPresent
+          args: ["--bind_ip_all"]
+          ports:
+            - { containerPort: 27017, name: mongo }
+          volumeMounts:
+            - { name: data, mountPath: /data/db }
+          resources:
+            requests: { cpu: "100m", memory: "256Mi" }
+            limits:   { cpu: "1",    memory: "2Gi" }
+          readinessProbe:
+            tcpSocket: { port: 27017 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: 27017 }
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mongo-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: flint
+spec:
+  selector: { app: mongo }
+  ports:
+    - { port: 27017, targetPort: 27017 }
+---
+# --- Server (API Express, user 'node' UID 1000 de node:20-alpine) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flint-server
+  namespace: flint
+  labels: { app: flint-server }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: flint-server }
+  template:
+    metadata:
+      labels: { app: flint-server }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: server
+          image: flint-server:<SHA>          # remplacé par $CI_COMMIT_SHORT_SHA
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { containerPort: 5000, name: http }
+          envFrom:
+            - secretRef: { name: flint-secrets }
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "1",    memory: "1Gi" }
+          # Pas de route /health -> sonde TCP (Ready dès app.listen)
+          readinessProbe:
+            tcpSocket: { port: 5000 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket: { port: 5000 }
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true        # l'app n'écrit que dans /tmp
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flint-server
+  namespace: flint
+spec:
+  selector: { app: flint-server }
+  ports:
+    - { port: 5000, targetPort: 5000, name: http }
+---
+# --- NodePort sur le serveur : cible du DAST ZAP (étape B.2) ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flint-server-nodeport
+  namespace: flint
+spec:
+  type: NodePort
+  selector: { app: flint-server }
+  ports:
+    - { port: 5000, targetPort: 5000, nodePort: 30050 }
+---
+# --- Client (nginx-unprivileged, UID 101, port 8080) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flint-client
+  namespace: flint
+  labels: { app: flint-client }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: flint-client }
+  template:
+    metadata:
+      labels: { app: flint-client }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: client
+          image: flint-client:<SHA>          # remplacé par $CI_COMMIT_SHORT_SHA
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { containerPort: 8080, name: http }
+          resources:
+            requests: { cpu: "50m",  memory: "32Mi" }
+            limits:   { cpu: "500m", memory: "128Mi" }
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flint-client
+  namespace: flint
+spec:
+  selector: { app: flint-client }
+  ports:
+    - { port: 8080, targetPort: 8080, name: http }

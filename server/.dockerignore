@@ -1,0 +1,10 @@
+# Ne JAMAIS embarquer ces éléments dans l'image (sécurité + légèreté)
+node_modules
+.env
+.env-exemple
+.git
+.gitignore
+Dockerfile
+.dockerignore
+npm-debug.log*
+*.log

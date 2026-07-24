@@ -1,0 +1,248 @@
+# =====================================================================
+#  flint_commerce — Pipeline DevSecOps (GitLab CI)
+#  Runner ARM (oracle-arm) + DefectDojo + Registry + Cosign
+# =====================================================================
+
+stages:
+  - secrets          # Gitleaks  : secrets commités
+  - sca              # Trivy fs  : CVE des dépendances (npm)
+  - sast             # Semgrep   : failles du code source
+  - build            # Docker    : build + PUSH images par digest
+  - iac              # Checkov   : mauvaises configs
+  - container-scan   # Trivy img + hadolint
+  - supply-chain     # Syft (SBOM) + Cosign (signature/verify)
+  - upload           # curl      : rapports -> DefectDojo
+  - ai-triage        # 👈 NOUVEAU : triage IA (Ollama)
+  - gates            #  👈 NOUVEAU : gates (DefectDojo + Ollama)
+
+default:
+  tags:
+    - oracle-arm
+
+# 1) SECRETS — Gitleaks
+secret_detection:
+  stage: secrets
+  dependencies: []
+  image: { name: zricethezav/gitleaks:latest, entrypoint: [""] }
+  script:
+    - gitleaks detect --source . --report-format json --report-path gitleaks-report.json --exit-code 0 -v
+  artifacts: { paths: [gitleaks-report.json], when: always }
+
+# 2) SCA — Trivy (dépendances)
+trivy_sca:
+  stage: sca
+  dependencies: []
+  image: { name: aquasec/trivy:latest, entrypoint: [""] }
+  script:
+    - trivy fs --scanners vuln,secret,misconfig --format table --output trivy-report.txt .
+    - trivy fs --scanners vuln,secret,misconfig --format json  --output trivy-report.json .
+    - cat trivy-report.txt
+  artifacts: { paths: [trivy-report.txt, trivy-report.json], when: always }
+
+# 3) SAST — Semgrep
+sast_semgrep:
+  stage: sast
+  dependencies: []
+  image: semgrep/semgrep:latest
+  script:
+    - semgrep --config "p/javascript" --config "p/security-audit" --json --output semgrep-report.json . || true
+    - semgrep --config "p/javascript" --config "p/security-audit" . || true
+  artifacts: { paths: [semgrep-report.json], when: always }
+
+# 4) BUILD — build + PUSH des 2 images + capture du digest (-> dotenv)
+build_image:
+  stage: build
+  image: docker:28.3.2-cli
+  services:
+    - docker:28.3.2-dind
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - for i in $(seq 1 30); do docker info >/dev/null 2>&1 && break; echo "attente dind ($i)"; sleep 2; done
+    - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin "$CI_REGISTRY"
+  script:
+    - |
+      build_one() {
+        name="$1"
+        ref="$CI_REGISTRY_IMAGE/flint-$name"
+        tag="$CI_COMMIT_SHORT_SHA"
+        if [ -f "$name/Dockerfile" ]; then
+          echo "🔨 Build flint-$name"
+          docker build --pull -t "flint-$name:$tag" -t "$ref:$tag" "$name"
+          docker save "flint-$name:$tag" -o "image-$name.tar"
+          docker push "$ref:$tag"
+          digest=$(docker inspect --format='{{index .RepoDigests 0}}' "$ref:$tag")
+          echo "→ $name digest: $digest"
+          up=$(echo "$name" | tr '[:lower:]' '[:upper:]')
+          echo "IMAGE_${up}=${digest}" >> build.env
+        else
+          echo "⏭️  $name/Dockerfile absent"; : > "image-$name.tar"
+        fi
+      }
+      : > build.env
+      build_one server
+      build_one client
+    - echo "=== build.env ===" ; cat build.env
+  artifacts:
+    paths: [image-server.tar, image-client.tar]
+    reports:
+      dotenv: build.env
+    expire_in: 1 day
+    when: always
+
+# 5) IaC — Checkov
+iac_scan:
+  stage: iac
+  dependencies: []
+  image: { name: bridgecrew/checkov:latest, entrypoint: [""] }
+  script:
+    - checkov -d . -o json --output-file-path . --soft-fail || true
+    - mv results_json.json checkov.json 2>/dev/null || cp results_json.json checkov.json 2>/dev/null || true
+    - |
+      if [ ! -s checkov.json ]; then
+        echo '{"check_type":"","results":{"passed_checks":[],"failed_checks":[],"skipped_checks":[],"parsing_errors":[]},"summary":{"passed":0,"failed":0,"skipped":0,"parsing_errors":0,"resource_count":0}}' > checkov.json
+      fi
+  artifacts: { paths: [checkov.json], when: always }
+  allow_failure: true
+
+# 6a) SCAN IMAGE — Trivy (2 images)
+image_scan:
+  stage: container-scan
+  image: { name: aquasec/trivy:latest, entrypoint: [""] }
+  needs: ["build_image"]
+  dependencies: ["build_image"]
+  script:
+    - |
+      scan_one() {
+        name="$1"; tar="image-$name.tar"
+        if [ -s "$tar" ]; then
+          echo "🔍 Trivy image: $name"
+          trivy image --input "$tar" --severity HIGH,CRITICAL --no-progress || true
+          trivy image --input "$tar" --format json --output "trivy-image-$name.json" --no-progress || true
+        else
+          echo '{"SchemaVersion":2,"Results":[]}' > "trivy-image-$name.json"
+        fi
+      }
+      scan_one server
+      scan_one client
+  artifacts: { paths: [trivy-image-server.json, trivy-image-client.json], when: always }
+  allow_failure: true
+
+# 6b) LINT — hadolint (2 Dockerfiles)
+dockerfile_lint:
+  stage: container-scan
+  dependencies: []
+  image: { name: hadolint/hadolint:latest-alpine, entrypoint: [""] }
+  script:
+    - |
+      lint_one() {
+        name="$1"; f="$name/Dockerfile"
+        if [ -f "$f" ]; then
+          echo "== hadolint $f =="; hadolint "$f" || true
+          hadolint -f json "$f" > "hadolint-$name.json" || true
+        else
+          echo '[]' > "hadolint-$name.json"
+        fi
+      }
+      lint_one server
+      lint_one client
+  artifacts: { paths: [hadolint-server.json, hadolint-client.json], when: always }
+  allow_failure: true
+
+# 7a) SBOM — Syft (CycloneDX) pour les 2 images
+sbom:
+  stage: supply-chain
+  image: alpine:3.20
+  needs: ["build_image"]
+  allow_failure: true
+  before_script:
+    - apk add --no-cache curl ca-certificates
+    - curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+    - syft version
+  script:
+    - syft docker-archive:image-server.tar -o cyclonedx-json=sbom-server.cdx.json
+    - syft docker-archive:image-client.tar -o cyclonedx-json=sbom-client.cdx.json
+    - ls -lh sbom-*.cdx.json
+  artifacts:
+    paths: [sbom-server.cdx.json, sbom-client.cdx.json]
+    expire_in: 30 days
+
+# 7b) SIGN — Cosign : signature par DIGEST + vérification
+sign:
+  stage: supply-chain
+  image: docker:cli
+  needs: ["build_image"]
+  allow_failure: true
+  variables:
+    COSIGN_YES: "true"
+  before_script:
+    - apk add --no-cache curl
+    - curl -sSfL "https://github.com/sigstore/cosign/releases/download/v2.4.3/cosign-linux-arm64" -o /usr/local/bin/cosign
+    - chmod +x /usr/local/bin/cosign
+    - cosign version
+    - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin "$CI_REGISTRY"
+  script:
+    - cosign sign   --key "$COSIGN_PRIVATE_KEY" --tlog-upload=false  "$IMAGE_SERVER"
+    - cosign sign   --key "$COSIGN_PRIVATE_KEY" --tlog-upload=false  "$IMAGE_CLIENT"
+    - cosign verify --key cosign.pub --insecure-ignore-tlog=true     "$IMAGE_SERVER"
+    - cosign verify --key cosign.pub --insecure-ignore-tlog=true     "$IMAGE_CLIENT"
+
+# 8) UPLOAD — DefectDojo
+upload_to_defectdojo:
+  stage: upload
+  image: curlimages/curl:latest
+  dependencies: [secret_detection, trivy_sca, sast_semgrep, iac_scan, image_scan, dockerfile_lint]
+  script:
+    - |
+      upload() {
+        scan_type="$1"; file="$2"; title="${3:-$1}"
+        [ -f "$file" ] || { echo "⏭️  $file absent, skip"; return 0; }
+        echo "⬆️  Upload $scan_type ($file) ..."
+        curl -sS -X POST "$DD_URL/api/v2/import-scan/" \
+          -H "Authorization: Token $DD_API_TOKEN" \
+          -F "scan_type=$scan_type" -F "file=@$file" -F "test_title=$title" \
+          -F "product_name=flint_commerce" -F "engagement_name=CI/CD Pipeline" \
+          -F "auto_create_context=true" -F "active=true" -F "verified=false" \
+          -F "minimum_severity=Low" || echo "⚠️ échec upload $scan_type"
+      }
+    - upload "Trivy Scan"                trivy-report.json       "Trivy FS"
+    - upload "Gitleaks Scan"             gitleaks-report.json
+    - upload "Semgrep JSON Report"       semgrep-report.json
+    - upload "Trivy Scan"                trivy-image-server.json "Trivy Image - Server"
+    - upload "Trivy Scan"                trivy-image-client.json "Trivy Image - Client"
+    - upload "Hadolint Dockerfile check" hadolint-server.json    "Hadolint - Server"
+    - upload "Hadolint Dockerfile check" hadolint-client.json    "Hadolint - Client"
+    - upload "Checkov Scan"              checkov.json
+
+# 9) AI TRIAGE — agent IA (DefectDojo + EPSS/KEV + Ollama qwen2.5:7b)
+ai_triage:
+  stage: ai-triage
+  image: python:3.12-alpine        # stdlib pure -> aucun pip
+  dependencies: []
+  variables:
+    DD_URL: "http://172.17.0.1:8080"        # DefectDojo sur l'hôte (bridge docker)
+    OLLAMA_URL: "http://172.17.0.1:11434"   # Ollama sur l'hôte (bridge docker)
+    OLLAMA_MODEL: "qwen2.5:7b"
+  script:
+    - python3 triage_agent.py --write
+  artifacts:
+    paths: [ai_triage_report.md]    # le rapport devient téléchargeable depuis GitLab
+    when: always
+    expire_in: 30 days
+  allow_failure: true
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'   # AUTO sur pipeline programmé (nuit)
+    - when: manual     
+       
+# 10) GATE — bloque le pipeline sur les P1 priorisés par l'IA
+gate_critical:
+  stage: gates
+  image: python:3.12-alpine
+  dependencies: []
+  variables:
+    DD_URL: "http://172.17.0.1:8080"
+    GATE_MAX: "0"        # 0 = aucune P1 tolérée -> bloque dès qu'il en reste
+  script:
+    - python3 gate.py
+  # PAS de allow_failure -> ce job BLOQUE vraiment le pipeline (c'est le but)                      # sinon : bouton "play" manuel
